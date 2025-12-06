@@ -1,10 +1,10 @@
-import { FaGithub, FaLinkedin, FaX } from "react-icons/fa";
+import { FaGithub, FaLinkedin } from "react-icons/fa";
 import { Link } from "react-router";
 import Container from "../Container";
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-100 text-gray-700 mt-12 border-t">
+    <footer className="bg-gray-100 text-gray-700 mt-12 ">
       <Container>
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center py-8 gap-6">
           {/* About / Logo */}
@@ -41,7 +41,7 @@ const Footer = () => {
                 <FaLinkedin className="w-5 h-5 hover:text-blue-700 transition" />
               </a>
               <a href="https://x.com/" target="_blank" rel="noreferrer">
-                <FaX className="w-5 h-5 hover:text-blue-400 transition" />
+                {/* <FaX className="w-5 h-5 hover:text-blue-400 transition" /> */}
               </a>
             </div>
           </div>

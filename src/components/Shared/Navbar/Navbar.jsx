@@ -5,11 +5,14 @@ import { Link } from "react-router"; // correct import
 import useAuth from "../../../hooks/useAuth";
 import avatarImg from "../../../assets/images/placeholder.jpg";
 import logo from "../../../../public/logo.jpeg";
-
+import LoadingSpinner from "../LoadingSpinner";
 const Navbar = () => {
-  const { user, logOut } = useAuth();
+  const { user, logOut, loading } = useAuth() || {};
   const [isOpen, setIsOpen] = useState(false);
 
+  if (loading) {
+    return <LoadingSpinner></LoadingSpinner>;
+  }
   return (
     <div className="fixed w-full bg-white z-50 shadow-sm">
       <Container>
@@ -24,7 +27,7 @@ const Navbar = () => {
             <Link to="/" className="hover:text-blue-600 font-medium">
               Home
             </Link>
-            <Link to="/clubs" className="hover:text-blue-600 font-medium">
+            <Link to="/club" className="hover:text-blue-600 font-medium">
               Clubs
             </Link>
             <Link to="/events" className="hover:text-blue-600 font-medium">
@@ -59,7 +62,7 @@ const Navbar = () => {
                     Home
                   </Link>
                   <Link
-                    to="/clubs"
+                    to="/club"
                     className="block px-4 py-2 hover:bg-neutral-100 transition font-medium md:hidden"
                     onClick={() => setIsOpen(false)}
                   >

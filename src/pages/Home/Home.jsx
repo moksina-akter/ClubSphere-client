@@ -1,9 +1,11 @@
 // import Plants from "../../components/Home/Plants";
 
+// import Clubs from "../Clubs/Clubs";
+
 const Home = () => {
   return (
     <div>
-      {/* <Plants /> */}
+      {/* <Clubs></Clubs> */}
       {/* More components */}
     </div>
   );

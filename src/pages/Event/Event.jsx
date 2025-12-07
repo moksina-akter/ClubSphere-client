@@ -6,7 +6,7 @@ import { Link } from "react-router";
 import { motion } from "framer-motion";
 
 const fetchEvents = async () => {
-  const { data } = await axios.get("/api/events");
+  const { data } = await axios.get(`${import.meta.env.VITE_LOCALHOST}/events`);
   return data;
 };
 
@@ -15,7 +15,10 @@ export default function Event() {
     data: events,
     isLoading,
     isError,
-  } = useQuery(["events"], fetchEvents);
+  } = useQuery({
+    queryKey: ["events"],
+    queryFn: fetchEvents,
+  });
 
   if (isLoading) return <p>Loading events...</p>;
   if (isError) return <p>Error loading events.</p>;

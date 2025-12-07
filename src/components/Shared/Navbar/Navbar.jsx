@@ -14,7 +14,7 @@ const Navbar = () => {
     return <LoadingSpinner></LoadingSpinner>;
   }
   return (
-    <div className="fixed w-full bg-white z-50 shadow-sm">
+    <div className="fixed w-full bg-gradient-to-b from-blue-50 to-blue-100 z-50 shadow-sm">
       <Container>
         <div className="flex justify-between items-center py-4">
           {/* Logo */}

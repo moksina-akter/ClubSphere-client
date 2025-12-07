@@ -5,7 +5,9 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 
 const fetchEventById = async (id) => {
-  const { data } = await axios.get(`/api/events/${id}`);
+  const { data } = await axios.get(
+    `${import.meta.env.VITE_LOCALHOST}/events/${id}`
+  );
   return data;
 };
 
@@ -17,18 +19,30 @@ export default function EventDetailsPage() {
     data: event,
     isLoading,
     isError,
-  } = useQuery(["event", id], () => fetchEventById(id));
+  } = useQuery({
+    queryKey: ["event", id], // unique key, id সহ
+    queryFn: () => fetchEventById(id), // function call
+  });
 
-  const registerMutation = useMutation(
-    (userEmail) => axios.post(`/api/events/${id}/register`, { userEmail }),
-    {
-      onSuccess: () => {
-        alert("Registered successfully");
-        queryClient.invalidateQueries(["event", id]);
-      },
-      onError: () => alert("Error registering"),
-    }
-  );
+  // const registerMutation = useMutation(
+  //   (userEmail) => axios.post(`/api/events/${id}/register`, { userEmail }),
+  //   {
+  //     onSuccess: () => {
+  //       alert("Registered successfully");
+  //       queryClient.invalidateQueries(["event", id]);
+  //     },
+  //     onError: () => alert("Error registering"),
+  //   }
+  // );
+  const registerMutation = useMutation({
+    mutationFn: (userEmail) =>
+      axios.post(`/api/events/${id}/register`, { userEmail }),
+    onSuccess: () => {
+      alert("Registered successfully");
+      queryClient.invalidateQueries(["event", id]);
+    },
+    onError: () => alert("Error registering"),
+  });
 
   const handleRegister = () => {
     const email = prompt("Enter your email to register"); // simple for now

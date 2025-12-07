@@ -1,11 +1,9 @@
-// import Plants from "../../components/Home/Plants";
-
-// import Clubs from "../Clubs/Clubs";
+import Hero from "./Hero";
 
 const Home = () => {
   return (
     <div>
-      {/* <Clubs></Clubs> */}
+      <Hero />
       {/* More components */}
     </div>
   );

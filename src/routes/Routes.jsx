@@ -2,7 +2,6 @@ import Home from "../pages/Home/Home";
 import ErrorPage from "../pages/ErrorPage";
 import Login from "../pages/Login/Login";
 import SignUp from "../pages/SignUp/SignUp";
-// import PlantDetails from "../pages/PlantDetails/PlantDetails";
 import PrivateRoute from "./PrivateRoute";
 import DashboardLayout from "../layouts/DashboardLayout";
 import AddPlant from "../pages/Dashboard/Seller/AddPlant";
@@ -16,6 +15,8 @@ import MyOrders from "../pages/Dashboard/Customer/MyOrders";
 import { createBrowserRouter } from "react-router";
 import ClubDetails from "../pages/Clubs/ClubDetails";
 import Clubs from "../pages/Clubs/Clubs";
+import Event from "../pages/Event/Event";
+import EventDetails from "../pages/Event/EventDetails";
 
 export const router = createBrowserRouter([
   {
@@ -35,12 +36,14 @@ export const router = createBrowserRouter([
         path: "/club/:id",
         element: <ClubDetails />,
       },
-      // {
-      //   path: "/club",
-      //   element: (
-      //     <div className="text-center py-10">Select a club to view details</div>
-      //   ),
-      // },
+      {
+        path: "/events",
+        element: <Event />,
+      },
+      {
+        path: "/events/:id",
+        element: <EventDetails />,
+      },
     ],
   },
   {

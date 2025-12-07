@@ -1,10 +1,15 @@
+import FeaturedClubs from "./FeaturedClubs";
 import Hero from "./Hero";
+import HowItWorks from "./HowItWorks";
+import WhyJoin from "./WhyJoin";
 
 const Home = () => {
   return (
     <div>
       <Hero />
-      {/* More components */}
+      <FeaturedClubs />
+      <HowItWorks />
+      <WhyJoin />
     </div>
   );
 };

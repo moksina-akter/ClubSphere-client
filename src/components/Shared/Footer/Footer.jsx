@@ -48,7 +48,7 @@ const Footer = () => {
         </div>
 
         {/* Footer bottom */}
-        <div className="border-t border-gray-300 mt-6 pt-4 text-center text-sm text-gray-500">
+        <div className="border-t border-gray-300  pt-4 pb-3 text-center text-sm text-gray-500">
           &copy; {new Date().getFullYear()} ClubSphere. All rights reserved.
         </div>
       </Container>

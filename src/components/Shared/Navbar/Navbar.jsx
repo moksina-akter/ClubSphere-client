@@ -19,7 +19,11 @@ const Navbar = () => {
         <div className="flex justify-between items-center py-4">
           {/* Logo */}
           <Link to="/">
-            <img src={logo} alt="ClubSphere Logo" className="w-12 h-12" />
+            <img
+              src={logo}
+              alt="ClubSphere Logo"
+              className="w-12 h-12 rounded-full"
+            />
           </Link>
 
           {/* Public Links (visible on md+) */}

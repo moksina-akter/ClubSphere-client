@@ -137,7 +137,7 @@ const Hero = () => {
         className="relative z-10 backdrop-blur-md 
                    bg-white/40 shadow-xl border border-white/30 rounded-lg p-10 max-w-3xl px-6"
       >
-        <h1 className="text-4xl md:text-6xl font-bold leading-tight drop-shadow-lg">
+        <h1 className="text-4xl md:text-5xl font-bold leading-tight drop-shadow-lg">
           Connect. Engage. Grow.
         </h1>
 

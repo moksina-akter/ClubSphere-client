@@ -32,14 +32,14 @@ const steps = [
 export default function HowItWorks() {
   return (
     <Container>
-      <section className="py-16 ">
+      <section className=" ">
         <div className=" px-4">
           {/* Heading */}
           <motion.h2
             initial={{ opacity: 0, y: -20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="text-3xl md:text-4xl font-bold text-center mb-12"
+            className="text-3xl md:text-4xl font-bold text-center mb-8"
           >
             How <span className="text-blue-600">ClubSphere</span> Works
           </motion.h2>

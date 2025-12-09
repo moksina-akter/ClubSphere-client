@@ -37,7 +37,7 @@ export default function EventDetailsPage() {
   // );
   const registerMutation = useMutation({
     mutationFn: (userEmail) =>
-      axios.post(`/api/events/${id}/register`, { userEmail }),
+      axios.post(`/api/events/${id}/signup`, { userEmail }),
     onSuccess: () => {
       alert("Registered successfully");
       queryClient.invalidateQueries(["event", id]);

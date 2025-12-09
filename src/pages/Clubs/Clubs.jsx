@@ -10,7 +10,7 @@ const fetchClubs = async () => {
 
 const Clubs = () => {
   const {
-    data: clubs,
+    data: clubs = [],
     isLoading,
     isError,
   } = useQuery({

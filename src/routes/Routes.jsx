@@ -17,6 +17,8 @@ import ClubDetails from "../pages/Clubs/ClubDetails";
 import Clubs from "../pages/Clubs/Clubs";
 import Event from "../pages/Event/Event";
 import EventDetails from "../pages/Event/EventDetails";
+import PaymentSuccess from "../pages/payment/PaymentSuccess ";
+import PaymentCancelled from "../pages/payment/PaymentCancelled";
 
 export const router = createBrowserRouter([
   {
@@ -51,17 +53,25 @@ export const router = createBrowserRouter([
     element: <Login />,
   },
   {
-    path: "/signup",
+    path: "/register",
     element: <SignUp />,
   },
   {
     path: "/dashboard",
     element: (
-      <PrivateRoute>
-        <DashboardLayout />
-      </PrivateRoute>
+      // <PrivateRoute>
+      <DashboardLayout />
+      // </PrivateRoute>
     ),
     children: [
+      {
+        path: "payment-success",
+        element: <PaymentSuccess />,
+      },
+      {
+        path: "payment-cancelled",
+        element: <PaymentCancelled />,
+      },
       {
         index: true,
         element: (

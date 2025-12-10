@@ -1,4 +1,4 @@
-const Events = () => {
+const EventsManagement = () => {
   return (
     <div className="bg-white p-6 rounded shadow">
       <h2 className="text-xl font-bold mb-3">Manage Events</h2>
@@ -7,4 +7,4 @@ const Events = () => {
   );
 };
 
-export default Events;
+export default EventsManagement;

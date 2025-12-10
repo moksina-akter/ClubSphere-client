@@ -1,4 +1,4 @@
-const Members = () => {
+const ClubMembers = () => {
   return (
     <div className="bg-white p-6 rounded shadow">
       <h2 className="text-xl font-bold mb-3">Members</h2>
@@ -7,4 +7,4 @@ const Members = () => {
   );
 };
 
-export default Members;
+export default ClubMembers;

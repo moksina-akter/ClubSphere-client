@@ -3,10 +3,10 @@ import Sidebar from "../pages/Dashboard/sidebar/Sidebar";
 
 const DashboardLayout = () => {
   return (
-    <div className="relative min-h-screen md:flex bg-white">
+    <div className="relative min-h-screen md:flex  bg-white">
       <Sidebar />
-      <div className="flex-1  md:ml-10">
-        <div className="p-5">
+      <div className="flex-1 bg-gradient-to-b from-blue-50 to-blue-100 ">
+        <div className="p-5 ">
           <Outlet />
         </div>
       </div>

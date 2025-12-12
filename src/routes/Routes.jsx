@@ -77,27 +77,72 @@ export const router = createBrowserRouter([
       },
 
       // Member routes
-      { path: "member", element: <MemberOverview /> },
-      { path: "member/member-my-clubs", element: <MyClubS /> },
-      { path: "member/my-events", element: <MyEvents /> },
-      { path: "member/payment-history", element: <PaymentHistory /> },
+      {
+        path: "member",
+        element: <MemberOverview />,
+      },
+      {
+        path: "member/member-my-clubs",
+        element: <MyClubS />,
+      },
+      {
+        path: "member/my-events",
+        element: <MyEvents />,
+      },
+      {
+        path: "member/payments",
+        element: <PaymentHistory />,
+      },
 
       // Manager routes
-      { path: "manager", element: <ManagerOverview /> },
-      { path: "manager/my-clubs", element: <ManagerClubs /> },
-      { path: "manager/events", element: <EventsManagement /> },
-      { path: "manager/members", element: <ClubMembers /> },
-      { path: "manager/events-registration", element: <EventRegistrations /> },
+      {
+        path: "manager",
+        element: <ManagerOverview />,
+      },
+      {
+        path: "manager/my-clubs",
+        element: <ManagerClubs />,
+      },
+      {
+        path: "manager/events",
+        element: <EventsManagement />,
+      },
+      {
+        path: "manager/members",
+        element: <ClubMembers />,
+      },
+      {
+        path: "manager/events-registration",
+        element: <EventRegistrations />,
+      },
 
       // Admin routes
-      { path: "admin", element: <AdminOverview /> },
-      { path: "admin/manage-users", element: <ManageUsers /> },
-      { path: "admin/manage-clubs", element: <ManageClubs /> },
-      { path: "admin/payments", element: <ViewPayments /> },
+      {
+        path: "admin",
+        element: <AdminOverview />,
+      },
+      {
+        path: "admin/manage-users",
+        element: <ManageUsers />,
+      },
+      {
+        path: "admin/manage-clubs",
+        element: <ManageClubs />,
+      },
+      {
+        path: "admin/payments",
+        element: <ViewPayments />,
+      },
 
       // Payment Pages
-      { path: "payment-success", element: <PaymentSuccess /> },
-      { path: "payment-cancelled", element: <PaymentCancelled /> },
+      {
+        path: "payment-success",
+        element: <PaymentSuccess />,
+      },
+      {
+        path: "payment-cancelled",
+        element: <PaymentCancelled />,
+      },
     ],
   },
 ]);

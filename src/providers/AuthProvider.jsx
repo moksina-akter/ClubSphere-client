@@ -53,19 +53,40 @@ const AuthProvider = ({ children }) => {
     });
   };
 
-  // FETCH USER ROLE
-  const fetchUserRole = async (email) => {
-    if (!email) return setRole("member");
-
-    const encodedEmail = encodeURIComponent(email); // encode special chars
+  const fetchUser = async (email) => {
+    setLoading(true);
     try {
-      const res = await axios.get(
-        `${import.meta.env.VITE_LOCALHOST}/users/${encodedEmail}`
+      let res = await axios.get(
+        `${import.meta.env.VITE_LOCALHOST}/users/${email}`
       );
-      setRole(res.data.role || "member");
+      setUser(res.data);
+      setRole(res.data.role);
     } catch (err) {
-      console.warn("Failed to fetch role:", err.message); // show warn, don't crash
-      setRole("member"); // fallback role
+      if (err.response?.status === 404) {
+        // User not found, create it
+        const token = await auth.currentUser.getIdToken(true);
+        const saveUser = {
+          name: auth.currentUser.displayName || "",
+          email: auth.currentUser.email,
+          uid: auth.currentUser.uid,
+          photoURL: auth.currentUser.photoURL || "",
+          role: auth.currentUser.role,
+          createdAt: new Date(),
+        };
+        // console.log(role);
+        const res = await axios.post(
+          `${import.meta.env.VITE_LOCALHOST}/users`,
+          saveUser,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        setUser(res.data.user);
+      } else {
+        console.error(err);
+      }
+    } finally {
+      setLoading(false); // spinner always turns off
     }
   };
 
@@ -75,7 +96,7 @@ const AuthProvider = ({ children }) => {
       setUser(currentUser);
 
       if (currentUser?.email) {
-        await fetchUserRole(currentUser.email);
+        await fetchUser(currentUser?.email);
       } else {
         setRole("member");
       }
@@ -95,6 +116,7 @@ const AuthProvider = ({ children }) => {
     signIn,
     signInWithGoogle,
     logOut,
+    setUser,
     updateUserProfile,
   };
 

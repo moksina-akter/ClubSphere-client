@@ -59,7 +59,7 @@ const PaymentSuccess = () => {
       try {
         if (session_id) {
           // Paid membership: verify Stripe session
-          const res = await axios.patch(
+          const res = await axios.post(
             `${
               import.meta.env.VITE_LOCALHOST
             }/payment-success?session_id=${session_id}`,

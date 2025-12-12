@@ -1,98 +1,99 @@
-// import { useQuery } from "@tanstack/react-query";
-// import { useParams } from "react-router";
+// import { useQuery, useMutation } from "@tanstack/react-query";
+// import { useParams, useNavigate } from "react-router";
 // import axios from "axios";
-// import Container from "../../components/Shared/Container";
-
-// const fetchClubById = async (id) => {
-//   const { data } = await axios.get(
-//     `${import.meta.env.VITE_LOCALHOST}/club/${id}`
-//   );
-//   return data;
-// };
+// import toast from "react-hot-toast";
+// import LoadingSpinner from "../../components/Shared/LoadingSpinner";
+// import useAuth from "../../hooks/useAuth";
 
 // const ClubDetails = () => {
 //   const { id } = useParams();
+//   const { user } = useAuth();
+//   const token = localStorage.getItem("token");
+//   const navigate = useNavigate();
+
+//   // Fetch club details
 //   const {
 //     data: club,
 //     isLoading,
 //     isError,
 //   } = useQuery({
 //     queryKey: ["club", id],
-//     queryFn: () => fetchClubById(id),
+//     queryFn: async () => {
+//       const res = await axios.get(`${import.meta.env.VITE_API_URL}/club/${id}`);
+//       return res.data;
+//     },
 //   });
 
-//   if (isLoading)
-//     return (
-//       <div className="flex justify-center items-center h-screen">
-//         <p className="text-gray-500 text-lg">Loading...</p>
-//       </div>
-//     );
+//   // Join club mutation
+//   const joinMutation = useMutation({
+//     mutationFn: async () => {
+//       if (!user || !token) throw new Error("Please login to join this club");
 
+//       const res = await axios.post(
+//         `${import.meta.env.VITE_LOCALHOST}/member/join`,
+//         { clubId: id },
+//         { headers: { Authorization: `Bearer ${token}` } }
+//       );
+//       return res.data;
+//     },
+//     onSuccess: (data) => {
+//       if (data.url) {
+//         // Paid membership
+//         window.location.href = data.url;
+//       } else {
+//         toast.success("You joined the club successfully!");
+//         navigate("/dashboard/member");
+//       }
+//     },
+//     onError: (err) => {
+//       toast.error(
+//         err.response?.data?.message || err.message || "Failed to join club"
+//       );
+//     },
+//   });
+
+//   if (isLoading) return <LoadingSpinner />;
 //   if (isError)
 //     return (
-//       <div className="flex justify-center items-center h-screen">
-//         <p className="text-red-500 text-lg">Something went wrong</p>
-//       </div>
-//     );
-
-//   if (!club)
-//     return (
-//       <div className="flex justify-center items-center h-screen">
-//         <p className="text-gray-500 text-lg">Club not found</p>
-//       </div>
+//       <p className="text-red-500 text-center mt-10">
+//         Failed to load club details.
+//       </p>
 //     );
 
 //   return (
-//     <Container>
-//       <div className=" py-12 px-4">
-//         <div className="flex flex-col md:flex-row md:gap-10 items-start">
-//           {/* 1️⃣ Image */}
-//           <div className="md:w-1/2 mb-6 md:mb-0 rounded-lg overflow-hidden shadow-lg">
-//             <img
-//               src={club.bannerImage || "https://via.placeholder.com/600x400"}
-//               alt={club.clubName}
-//               className="w-full h-64 md:h-full object-cover"
-//             />
-//           </div>
-
-//           {/* 2️⃣ Info */}
-//           <div className="md:w-1/2 flex flex-col justify-between">
-//             <div>
-//               <h1 className="text-3xl font-bold text-gray-800 mb-2">
-//                 {club.clubName}
-//               </h1>
-//               <p className="text-gray-500 mb-4">
-//                 {club.category} | {club.location}
-//               </p>
-//               <h2 className="text-2xl font-semibold text-gray-700 mb-2">
-//                 About Club
-//               </h2>
-//               <p className="text-gray-700 leading-relaxed">
-//                 {club.description}
-//               </p>
-//             </div>
-
-//             {/* 3️⃣ Membership */}
-//             <div className="mt-6">
-//               <h2 className="text-xl font-semibold text-gray-700 mb-2">
-//                 Membership
-//               </h2>
-//               <button
-//                 className={`px-6 py-3 rounded-lg text-white font-medium transition-colors duration-300 ${
-//                   club.membershipFee > 0
-//                     ? "bg-green-600 hover:bg-green-700"
-//                     : "bg-blue-600 hover:bg-blue-700"
-//                 }`}
-//               >
-//                 {club.membershipFee > 0
-//                   ? `Join Club ($${club.membershipFee})`
-//                   : "Join Club (Free)"}
-//               </button>
-//             </div>
-//           </div>
+//     <div className="container mx-auto px-4 py-10">
+//       <div className="max-w-4xl mx-auto bg-white shadow-md rounded-lg overflow-hidden">
+//         <img
+//           src={club.bannerImage || "/placeholder.jpg"}
+//           alt={club.clubName}
+//           className="w-full h-64 object-cover"
+//         />
+//         <div className="p-6">
+//           <h1 className="text-3xl font-bold mb-4">{club.clubName}</h1>
+//           <p className="text-gray-600 mb-2">{club.category}</p>
+//           <p className="text-gray-700 mb-4">{club.description}</p>
+//           <p className="mb-4 font-medium">
+//             Membership Fee:{" "}
+//             {club.membershipFee > 0 ? `$${club.membershipFee}` : "Free"}
+//           </p>
+//           <button
+//             onClick={() => joinMutation.mutate()}
+//             disabled={joinMutation.isLoading}
+//             className={`px-6 py-2 rounded text-white font-medium transition ${
+//               club.membershipFee > 0
+//                 ? "bg-green-600 hover:bg-green-700"
+//                 : "bg-blue-600 hover:bg-blue-700"
+//             } ${joinMutation.isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
+//           >
+//             {joinMutation.isLoading
+//               ? "Processing..."
+//               : club.membershipFee > 0
+//               ? `Pay $${club.membershipFee} & Join`
+//               : "Join Free"}
+//           </button>
 //         </div>
 //       </div>
-//     </Container>
+//     </div>
 //   );
 // };
 
@@ -101,92 +102,59 @@
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router";
 import axios from "axios";
-import Container from "../../components/Shared/Container";
+import LoadingSpinner from "../../components/Shared/LoadingSpinner";
 import JoinClub from "./JoinClub";
-// import JoinClub from "../../components/JoinClub"; // <-- Import
-
-const fetchClubById = async (id) => {
-  const { data } = await axios.get(
-    `${import.meta.env.VITE_LOCALHOST}/club/${id}`
-  );
-  return data;
-};
 
 const ClubDetails = () => {
   const { id } = useParams();
+  // console.log(id);
   const {
     data: club,
     isLoading,
     isError,
   } = useQuery({
     queryKey: ["club", id],
-    queryFn: () => fetchClubById(id),
+    queryFn: async () => {
+      const res = await axios.get(
+        `${import.meta.env.VITE_LOCALHOST}/club/${id}`
+      );
+      // console.log(club);
+      return res.data;
+    },
   });
 
-  if (isLoading)
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <p className="text-gray-500 text-lg">Loading...</p>
-      </div>
-    );
-
+  if (isLoading) return <LoadingSpinner />;
   if (isError)
     return (
-      <div className="flex justify-center items-center h-screen">
-        <p className="text-red-500 text-lg">Something went wrong</p>
-      </div>
-    );
-
-  if (!club)
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <p className="text-gray-500 text-lg">Club not found</p>
-      </div>
+      <p className="text-red-500 text-center mt-10">
+        Failed to load club details.
+      </p>
     );
 
   return (
-    <Container>
-      <div className=" py-12 px-4">
-        <div className="flex flex-col md:flex-row md:gap-10 items-start">
-          {/* 1️⃣ Image */}
-          <div className="md:w-1/2 mb-6 md:mb-0 rounded-lg overflow-hidden shadow-lg">
-            <img
-              src={club.bannerImage || "https://via.placeholder.com/600x400"}
-              alt={club.clubName}
-              className="w-full h-64 md:h-full object-cover"
-            />
-          </div>
+    <div className="container mx-auto px-4 py-10">
+      <div className="max-w-4xl mx-auto bg-white shadow-md rounded-lg overflow-hidden">
+        <img
+          src={club.bannerImage || "/placeholder.jpg"}
+          alt={club.clubName}
+          className="w-full h-64 object-cover"
+        />
 
-          {/* 2️⃣ Info */}
-          <div className="md:w-1/2 flex flex-col justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-800 mb-2">
-                {club.clubName}
-              </h1>
-              <p className="text-gray-500 mb-4">
-                {club.category} | {club.location}
-              </p>
-              <h2 className="text-2xl font-semibold text-gray-700 mb-2">
-                About Club
-              </h2>
-              <p className="text-gray-700 leading-relaxed">
-                {club.description}
-              </p>
-            </div>
+        <div className="p-6">
+          <h1 className="text-3xl font-bold mb-4">{club.clubName}</h1>
+          <p className="text-gray-600 mb-2">{club.category}</p>
+          <p className="text-gray-700 mb-4">{club.description}</p>
 
-            {/* 3️⃣ Membership */}
-            <div className="mt-6">
-              <h2 className="text-xl font-semibold text-gray-700 mb-2">
-                Membership
-              </h2>
+          <p className="mb-4 font-medium">
+            Membership Fee:{" "}
+            {club.membershipFee > 0 ? `$${club.membershipFee}` : "Free"}
+          </p>
 
-              {/* ✅ Connect JoinClub component */}
-              <JoinClub club={club} />
-            </div>
-          </div>
+          {/* Join Button Component */}
+          <JoinClub club={club} />
         </div>
       </div>
-    </Container>
+    </div>
   );
 };
 

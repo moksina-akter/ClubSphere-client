@@ -25,22 +25,26 @@ export default function Event() {
 
   return (
     <Container>
+      {" "}
+      <h1 className="text-3xl font-bold p-5 mt-5 text-blue-700 text-center">
+        All Events
+      </h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
         {events.map((event) => (
           <motion.div
             key={event._id}
-            className="border p-4 rounded shadow hover:shadow-lg transition"
+            className="bg-white p-4 rounded shadow hover:shadow-lg transition"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
           >
             <h2 className="text-xl font-bold">{event.title}</h2>
             <p className="text-sm text-gray-500">
-              {new Date(event.eventDate).toLocaleDateString()}
+              {new Date(event.createdAt).toLocaleString()}
             </p>
             <p className="mt-2">{event.description.substring(0, 100)}...</p>
-            <p className="mt-1 font-medium">Club: {event.clubId.clubName}</p>
+            <p className="mt-1 font-medium">Club: {event.clubId}</p>
             <p className="mt-1 font-medium">
-              {event.isPaid ? `Fee: $${event.eventFee}` : "Free"}
+              {event.fee > 0 ? `Fee: ৳${event.fee}` : "Free"}
             </p>
             <Link
               to={`/events/${event._id}`}

@@ -10,9 +10,7 @@ const MemberOverview = () => {
     queryFn: async () => {
       const res = await axios.get(
         `${import.meta.env.VITE_LOCALHOST}/member-overview`,
-        {
-          params: { email: user.email },
-        }
+        { params: { email: user.email } }
       );
       return res.data;
     },
@@ -24,20 +22,41 @@ const MemberOverview = () => {
   return (
     <div>
       <h1 className="text-2xl font-bold">
-        Welcome, {user?.displayName || user?.email}
+        Welcome,{" "}
+        <span className="text-blue-800 font-bold">
+          {user?.displayName || user?.email}
+        </span>
       </h1>
+
       <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-5">
-        <div className="border p-4 rounded shadow">
-          <h2>Total Clubs Joined</h2>
-          <p>{overview.totalClubsJoined}</p>
+        {/* Total Clubs Joined */}
+        <div className="border border-blue-600 bg-white p-4 rounded shadow">
+          <h2 className="font-medium">Total Clubs Joined</h2>
+          <p className="text-xl font-bold">{overview.totalClubsJoined}</p>
         </div>
-        <div className="border p-4 rounded shadow">
-          <h2>Total Events Registered</h2>
-          <p>{overview.totalEventsRegistered}</p>
+
+        {/* Total Events Registered */}
+        <div className="border border-blue-600 bg-white p-4 rounded shadow">
+          <h2 className="font-medium">Total Events Registered</h2>
+          <p className="text-xl font-bold">{overview.totalEventsRegistered}</p>
         </div>
-        <div className="border p-4 rounded shadow">
-          <h2>Upcoming Events</h2>
-          <p>{overview.upcomingEvents.length}</p>
+
+        {/* Upcoming Events */}
+        <div className="border border-blue-600 bg-white p-4 rounded shadow ">
+          <h2 className="font-medium mb-2">Upcoming Events</h2>
+          {overview.upcomingEvents.length === 0 ? (
+            <p>No upcoming events</p>
+          ) : (
+            <ul className="space-y-2 border-blue-600 bg-white">
+              {overview.upcomingEvents.map((event) => (
+                <li key={event._id} className="border p-2 rounded">
+                  <p className="font-bold">{event.eventTitle}</p>
+                  <p>Club: {event.clubName}</p>
+                  <p>Date: {new Date(event.eventDate).toLocaleString()}</p>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </div>
     </div>

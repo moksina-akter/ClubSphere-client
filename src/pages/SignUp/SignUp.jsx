@@ -1,4 +1,4 @@
-// import { Link, useLocation, useNavigate } from "react-router";
+// import { Link, useLocation, useNavigate, Navigate } from "react-router";
 // import { FcGoogle } from "react-icons/fc";
 // import useAuth from "../../hooks/useAuth";
 // import { toast } from "react-hot-toast";
@@ -18,37 +18,33 @@
 //   const location = useLocation();
 //   const from = location.state || "/";
 //   const auth = useAuth();
+
 //   if (!auth || auth.loading) return <LoadingSpinner />;
 
-//   const { createUser, user, updateUserProfile, signInWithGoogle, loading } =
-//     auth;
+//   const {
+//     createUser,
+//     user,
+//     updateUserProfile,
+//     signInWithGoogle,
+//     setLoading,
+//     loading,
+//   } = auth;
+
 //   if (user) return <Navigate to="/" replace />;
-//   // HANDLE SUBMIT
 //   const onSubmit = async (data) => {
+//     setLoading(true);
 //     try {
-//       const { name, email, password, role, image } = data;
+//       const { name, email, password, image } = data;
 
-//       // 1. Create User
+//       // 1️⃣ Create Firebase user
 //       const result = await createUser(email, password);
+//       const firebaseUser = result.user;
 
-//       // 2. Profile Image Handling
-//       let photoURL = "https://i.ibb.co.com/4pD1g8k/default-user.png"; // fallback
-
+//       // 2️⃣ Upload photo if exists
+//       let photoURL = "https://i.ibb.co/4pD1g8k/default-user.png";
 //       if (image && image.length > 0) {
 //         const formData = new FormData();
 //         formData.append("image", image[0]);
-//         console.log(formData);
-
-//         // USE ImgBB / Cloudinary if required (recommended)
-//         // const res = await axios.post(
-//         //   `https://api.imgbb.com/1/upload?key=${
-//         //     import.meta.env.VITE_IMGBB_KEY
-//         //   }`,
-//         //   formData
-//         // );
-//         // const imgData = await res.json();
-//         // photoURL = imgData.data.url;
-
 //         const res = await axios.post(
 //           `https://api.imgbb.com/1/upload?key=${
 //             import.meta.env.VITE_IMGBB_KEY
@@ -58,61 +54,81 @@
 //         photoURL = res.data.data.url;
 //       }
 
-//       // 3. Update Firebase Profile
+//       // 3️⃣ Update Firebase profile
 //       await updateUserProfile(name, photoURL);
 
-//       // 4. Save user data to DB
-//       const saveUser = {
-//         name,
-//         email,
-//         role: role || "member",
-//         photoURL,
-//         createdAt: new Date(),
-//       };
+//       // 4️⃣ Get fresh token from newly created user
+//       const token = await firebaseUser.getIdToken(true);
 
-//       await axios.post(`${import.meta.env.VITE_LOCALHOST}/users`, saveUser, {
-//         headers: {
-//           "Content-Type": "application/json",
+//       // 5️⃣ Save user to MongoDB
+//       await axios.post(
+//         `${import.meta.env.VITE_LOCALHOST}/users`,
+//         {
+//           name: firebaseUser.displayName || name,
+//           email: firebaseUser.email,
+//           photoURL: firebaseUser.photoURL || photoURL,
+//           uid: firebaseUser.uid,
+//           role: "member",
+//           createdAt: new Date(),
 //         },
-//       });
+//         {
+//           headers: {
+//             Authorization: `Bearer ${token}`,
+//             "Content-Type": "application/json",
+//           },
+//         }
+//       );
 
 //       toast.success("Signup Successful");
-//       // navigate(from, { replace: true });
+//       navigate(from, { replace: true });
 //     } catch (err) {
-//       console.log(err);
-//       toast.error(err.message);
+//       console.error("Signup error:", err);
+//       toast.error(err.response?.data?.message || err.message);
+//     } finally {
+//       setLoading(false);
 //     }
 //   };
 
-//   // GOOGLE SIGNUP
 //   const handleGoogleSignIn = async () => {
+//     setLoading(true);
 //     try {
 //       const result = await signInWithGoogle();
+//       const firebaseUser = result.user;
 
-//       // SAVE USER TO DB
-//       const saveUser = {
-//         name: result.user.displayName,
-//         email: result.user.email,
-//         role: "member",
-//         photoURL: result.user.photoURL,
-//         createdAt: new Date(),
-//       };
+//       const token = await firebaseUser.getIdToken(true);
 
-//       await axios.post(`${import.meta.env.VITE_LOCALHOST}/users`, saveUser, {
-//         headers: { "Content-Type": "application/json" },
-//       });
+//       await axios.post(
+//         `${import.meta.env.VITE_LOCALHOST}/users`,
+//         {
+//           name: firebaseUser.displayName,
+//           email: firebaseUser.email,
+//           photoURL: firebaseUser.photoURL,
+//           uid: firebaseUser.uid,
+//           role: "member",
+//           createdAt: new Date(),
+//         },
+//         {
+//           headers: {
+//             Authorization: `Bearer ${token}`,
+//             "Content-Type": "application/json",
+//           },
+//         }
+//       );
 
-//       toast.success(" Successful");
+//       toast.success("Login Successful");
 //       navigate(from, { replace: true });
 //     } catch (err) {
-//       toast.error(err.message);
+//       console.error("Google Sign-In error:", err);
+//       toast.error(err.response?.data?.message || err.message);
+//     } finally {
+//       setLoading(false);
 //     }
 //   };
 
 //   return (
 //     <div className="flex justify-center items-center min-h-screen bg-white">
 //       <div className="flex flex-col max-2xl-md p-6 rounded-md sm:p-10 bg-gray-100 text-gray-900">
-//         <div className=" text-center">
+//         <div className="text-center">
 //           <h1 className="my-3 text-4xl font-bold">Sign Up</h1>
 //           <p className="text-sm text-gray-400">Welcome to ClubSphere</p>
 //         </div>
@@ -130,22 +146,6 @@
 //               />
 //               {errors.name && (
 //                 <p className="text-red-500 text-xs">{errors.name.message}</p>
-//               )}
-//             </div>
-
-//             {/* ROLE */}
-//             <div>
-//               <label className="block mb-2 text-sm">Role</label>
-//               <select
-//                 {...register("role", { required: "Role is required" })}
-//                 className="w-full px-3 py-2 border rounded-md bg-gray-200"
-//               >
-//                 <option value="member">admin</option>
-//                 <option value="manager">clubManager</option>
-//                 <option value="manager">member</option>
-//               </select>
-//               {errors.role && (
-//                 <p className="text-red-500 text-xs">{errors.role.message}</p>
 //               )}
 //             </div>
 
@@ -183,7 +183,7 @@
 //                   pattern: {
 //                     value: /^(?=.*[a-z])(?=.*[A-Z]).{6,}$/,
 //                     message:
-//                       "Password must contain 1 uppercase, 1 lowercase & 6 characters",
+//                       "Password must contain 1 uppercase, 1 lowercase & at least 6 chars",
 //                   },
 //                 })}
 //                 type="password"
@@ -221,7 +221,7 @@
 
 //         <p className="px-6 text-sm text-center mt-3 text-gray-400">
 //           Already have an account?{" "}
-//           <Link to="/login" className="text-blue-600 ">
+//           <Link to="/login" className="text-blue-600">
 //             Login
 //           </Link>
 //         </p>
@@ -231,7 +231,6 @@
 // };
 
 // export default SignUp;
-
 import { Link, useLocation, useNavigate, Navigate } from "react-router";
 import { FcGoogle } from "react-icons/fc";
 import useAuth from "../../hooks/useAuth";
@@ -255,28 +254,125 @@ const SignUp = () => {
 
   if (!auth || auth.loading) return <LoadingSpinner />;
 
-  const { createUser, user, updateUserProfile, signInWithGoogle, loading } =
-    auth;
+  const {
+    createUser,
+    user,
+    updateUserProfile,
+    signInWithGoogle,
+    setLoading,
+    setUser,
+    loading,
+  } = auth;
 
   if (user) return <Navigate to="/" replace />;
 
-  // ============================
-  //        HANDLE SUBMIT
-  // ============================
+  // const onSubmit = async (data) => {
+  //   setLoading(true);
+  //   try {
+  //     const { name, email, password, image } = data;
+
+  //     // 1️⃣ Create Firebase user
+  //     const result = await createUser(email, password);
+  //     const firebaseUser = result.user;
+
+  //     // 2️⃣ Upload photo if exists
+  //     let photoURL = "https://i.ibb.co/4pD1g8k/default-user.png";
+  //     if (image && image.length > 0) {
+  //       const formData = new FormData();
+  //       formData.append("image", image[0]);
+  //       const res = await axios.post(
+  //         `https://api.imgbb.com/1/upload?key=${
+  //           import.meta.env.VITE_IMGBB_KEY
+  //         }`,
+  //         formData
+  //       );
+  //       photoURL = res.data.data.url;
+  //     }
+
+  //     // 3️⃣ Update Firebase profile
+  //     await updateUserProfile(name, photoURL);
+
+  //     // 4️⃣ Get fresh token from newly created user
+  //     const token = await firebaseUser.getIdToken(true);
+
+  //     // 5️⃣ Save user to MongoDB
+  //     await axios.post(
+  //       `${import.meta.env.VITE_LOCALHOST}/users`,
+  //       {
+  //         name: firebaseUser.displayName || name,
+  //         email: firebaseUser.email,
+  //         photoURL: firebaseUser.photoURL || photoURL,
+  //         uid: firebaseUser.uid,
+  //         role: "member",
+  //         createdAt: new Date(),
+  //       },
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //           "Content-Type": "application/json",
+  //         },
+  //       }
+  //     );
+
+  //     toast.success("Signup Successful");
+  //     navigate(from, { replace: true });
+  //   } catch (err) {
+  //     console.error("Signup error:", err);
+  //     toast.error(err.response?.data?.message || err.message);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  // const handleGoogleSignIn = async () => {
+  //   setLoading(true);
+  //   try {
+  //     const result = await signInWithGoogle();
+  //     const firebaseUser = result.user;
+
+  //     const token = await firebaseUser.getIdToken(true);
+
+  //     await axios.post(
+  //       `${import.meta.env.VITE_LOCALHOST}/users`,
+  //       {
+  //         name: firebaseUser.displayName,
+  //         email: firebaseUser.email,
+  //         photoURL: firebaseUser.photoURL,
+  //         uid: firebaseUser.uid,
+  //         role: "member",
+  //         createdAt: new Date(),
+  //       },
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //           "Content-Type": "application/json",
+  //         },
+  //       }
+  //     );
+
+  //     toast.success("Login Successful");
+  //     navigate(from, { replace: true });
+  //   } catch (err) {
+  //     console.error("Google Sign-In error:", err);
+  //     toast.error(err.response?.data?.message || err.message);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
   const onSubmit = async (data) => {
+    setLoading(true);
     try {
       const { name, email, password, image } = data;
 
-      // 1. Create User
+      // Create Firebase user
       const result = await createUser(email, password);
 
-      // 2. Profile Image Upload
-      let photoURL = "https://i.ibb.co.com/4pD1g8k/default-user.png";
-
+      // Upload photo if any
+      let photoURL = "https://i.ibb.co/4pD1g8k/default-user.png";
       if (image && image.length > 0) {
         const formData = new FormData();
         formData.append("image", image[0]);
-
         const res = await axios.post(
           `https://api.imgbb.com/1/upload?key=${
             import.meta.env.VITE_IMGBB_KEY
@@ -286,60 +382,71 @@ const SignUp = () => {
         photoURL = res.data.data.url;
       }
 
-      // 3. Update Firebase Profile
+      // Update Firebase profile
       await updateUserProfile(name, photoURL);
 
-      // 4. Save user to database (role always member)
-      const saveUser = {
-        name,
-        email,
-        role: "member",
-        photoURL,
-        createdAt: new Date(),
-      };
+      // Save to MongoDB (POST only once)
+      const currentUser = auth.currentUser;
+      const token = await currentUser.getIdToken();
 
-      await axios.post(`${import.meta.env.VITE_LOCALHOST}/users`, saveUser, {
-        headers: { "Content-Type": "application/json" },
-      });
+      await axios.post(
+        `${import.meta.env.VITE_LOCALHOST}/users`,
+        {
+          name: currentUser.displayName,
+          email: currentUser.email,
+          photoURL: currentUser.photoURL,
+          uid: currentUser.uid,
+          role: "member",
+          createdAt: new Date(),
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      // update local state to prevent AuthProvider POST
+      setUser({ ...currentUser, role: "member" });
 
       toast.success("Signup Successful");
       navigate(from, { replace: true });
     } catch (err) {
       console.log(err);
       toast.error(err.message);
+    } finally {
+      setLoading(false);
     }
   };
-
-  // ======================================
-  //       GOOGLE SIGNUP / LOGIN
-  // ======================================
   const handleGoogleSignIn = async () => {
+    setLoading(true);
     try {
       const result = await signInWithGoogle();
+      const currentUser = result.user;
+      const token = await currentUser.getIdToken();
 
-      // SAVE USER TO DB
-      const saveUser = {
-        name: result.user.displayName,
-        email: result.user.email,
-        role: "member",
-        photoURL: result.user.photoURL,
-        createdAt: new Date(),
-      };
+      // POST to MongoDB only if first time login
+      await axios.post(
+        `${import.meta.env.VITE_LOCALHOST}/users`,
+        {
+          name: currentUser.displayName,
+          email: currentUser.email,
+          photoURL: currentUser.photoURL,
+          uid: currentUser.uid,
+          role: "member",
+          createdAt: new Date(),
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
-      await axios.post(`${import.meta.env.VITE_LOCALHOST}/users`, saveUser, {
-        headers: { "Content-Type": "application/json" },
-      });
+      setUser({ ...currentUser, role: "member" });
 
       toast.success("Login Successful");
       navigate(from, { replace: true });
     } catch (err) {
+      console.log(err);
       toast.error(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
-  // ======================================
-  //                 UI
-  // ======================================
   return (
     <div className="flex justify-center items-center min-h-screen bg-white">
       <div className="flex flex-col max-2xl-md p-6 rounded-md sm:p-10 bg-gray-100 text-gray-900">

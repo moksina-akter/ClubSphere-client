@@ -1,37 +1,54 @@
 // import { useMutation } from "@tanstack/react-query";
 // import axios from "axios";
+// import toast from "react-hot-toast";
+// import { useNavigate } from "react-router";
+// import { getAuth } from "firebase/auth";
 
 // const JoinClub = ({ club }) => {
-//   const createCheckoutSession = useMutation({
+//   const navigate = useNavigate();
+
+//   const joinMutation = useMutation({
 //     mutationFn: async () => {
+//       const auth = getAuth();
+//       const user = auth.currentUser;
+
+//       if (!user) throw new Error("User not authenticated");
+
+//       // Get fresh token, force refresh if expired
+//       const token = await user.getIdToken(true);
+
 //       const res = await axios.post(
-//         `${import.meta.env.VITE_LOCALHOST}/create-checkout-session`,
-//         {
-//           clubId: club._id,
-//           clubName: club.clubName,
-//           membershipFee: club.membershipFee,
-//         },
-//         {
-//           headers: {
-//             Authorization: `Bearer ${localStorage.getItem("token")}`,
-//           },
-//         }
+//         `${import.meta.env.VITE_LOCALHOST}/member/join`,
+//         { clubId: club._id },
+//         { headers: { Authorization: `Bearer ${token}` } }
 //       );
+
 //       return res.data;
+//     },
+//     onSuccess: (data) => {
+//       if (data.url) {
+//         // Paid membership redirect
+//         window.location.href = data.url;
+//       } else if (data.success) {
+//         toast.success("You have joined the club!");
+//         navigate("/dashboard/member");
+//       }
+//     },
+//     onError: (err) => {
+//       console.error(err);
+//       toast.error(err.response?.data?.message || "Failed to join club");
 //     },
 //   });
 
-//   const handleJoin = async () => {
-//     try {
-//       const { url } = await createCheckoutSession.mutateAsync();
-//       window.location.href = url; // Redirect to Stripe checkout
-//     } catch (err) {
-//       console.error(err);
-//     }
-//   };
-
 //   return (
-//     <button onClick={handleJoin} className="btn btn-primary">
+//     <button
+//       onClick={() => joinMutation.mutate()}
+//       className={`px-6 py-3 rounded-lg text-white font-medium ${
+//         club.membershipFee > 0
+//           ? "bg-green-600 hover:bg-green-700"
+//           : "bg-blue-600 hover:bg-blue-700"
+//       }`}
+//     >
 //       {club.membershipFee > 0
 //         ? `Pay $${club.membershipFee} & Join`
 //         : "Join Free"}
@@ -40,78 +57,61 @@
 // };
 
 // export default JoinClub;
+
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
+import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
+import { getAuth } from "firebase/auth";
 
 const JoinClub = ({ club }) => {
   const navigate = useNavigate();
 
-  const createCheckoutSession = useMutation({
+  const joinMutation = useMutation({
     mutationFn: async () => {
-      const res = await axios.post(
-        `${import.meta.env.VITE_LOCALHOST}/create-checkout-session`,
-        {
-          clubId: club._id,
-          clubName: club.clubName,
-          membershipFee: club.membershipFee,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-      return res.data;
-    },
-  });
+      const auth = getAuth();
+      const user = auth.currentUser;
 
-  const joinFreeClub = useMutation({
-    mutationFn: async () => {
+      if (!user) throw new Error("Please login to join the club");
+      // Always get fresh token
+      const token = await user.getIdToken(true);
+
       const res = await axios.post(
-        `${import.meta.env.VITE_LOCALHOST}/join-free-club`,
+        `${import.meta.env.VITE_LOCALHOST}/member/join`,
         { clubId: club._id },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
+
       return res.data;
     },
+
     onSuccess: (data) => {
-      if (data.success) {
-        alert("You have joined the club for free!");
-        navigate("/dashboard/member"); // Redirect to member dashboard
+      if (data.url) {
+        window.location.href = data.url; // For paid membership
       } else {
-        alert("Something went wrong while joining the club.");
+        toast.success("You have joined the club!");
+        navigate("/dashboard/member");
       }
     },
-  });
 
-  const handleJoin = async () => {
-    if (club.membershipFee > 0) {
-      try {
-        const { url } = await createCheckoutSession.mutateAsync();
-        window.location.href = url; // Redirect to Stripe checkout
-      } catch (err) {
-        console.error(err);
-      }
-    } else {
-      joinFreeClub.mutate();
-    }
-  };
+    onError: (err) => {
+      toast.error(err.response?.data?.message || "Failed to join club");
+    },
+  });
 
   return (
     <button
-      onClick={handleJoin}
-      className={`px-6 py-3 rounded-lg text-white font-medium transition-colors duration-300 ${
+      onClick={() => joinMutation.mutate()}
+      disabled={joinMutation.isLoading}
+      className={`px-6 py-3 rounded-lg text-white font-medium ${
         club.membershipFee > 0
           ? "bg-green-600 hover:bg-green-700"
           : "bg-blue-600 hover:bg-blue-700"
-      }`}
+      } ${joinMutation.isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
     >
-      {club.membershipFee > 0
+      {joinMutation.isLoading
+        ? "Processing..."
+        : club.membershipFee > 0
         ? `Pay $${club.membershipFee} & Join`
         : "Join Free"}
     </button>

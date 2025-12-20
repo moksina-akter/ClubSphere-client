@@ -1,61 +1,61 @@
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import useAuth from "../../../hooks/useAuth";
+import useAxiosSecure from "../../../hooks/useAxiosSecure";
 
 const MemberOverview = () => {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
+  const axiosSecure = useAxiosSecure();
 
-  const { data: overview } = useQuery({
+  const {
+    data: overview,
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ["memberOverview", user?.email],
+    enabled: !!user?.email && !loading,
     queryFn: async () => {
-      const res = await axios.get(
-        `${import.meta.env.VITE_LOCALHOST}/member-overview`,
-        { params: { email: user.email } }
-      );
+      const res = await axiosSecure.get(`/member-overview?email=${user.email}`);
       return res.data;
     },
-    enabled: !!user?.email,
   });
 
-  if (!overview) return <p>Loading...</p>;
+  if (isLoading) return <p>Loading...</p>;
+  if (isError) return <p>Failed to load overview</p>;
 
   return (
     <div>
       <h1 className="text-2xl font-bold">
-        Welcome,{" "}
-        <span className="text-blue-800 font-bold">
+        Welcome{" "}
+        <span className="text-blue-800">
           {user?.displayName || user?.email}
         </span>
       </h1>
 
       <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-5">
-        {/* Total Clubs Joined */}
-        <div className="border border-blue-600 bg-white p-4 rounded shadow">
-          <h2 className="font-medium">Total Clubs Joined</h2>
-          <p className="text-xl font-bold">{overview.totalClubsJoined}</p>
+        <div className="bg-white p-4 rounded shadow">
+          <h2>Total Clubs Joined</h2>
+          <p className="font-bold text-xl">{overview?.totalClubsJoined || 0}</p>
         </div>
 
-        {/* Total Events Registered */}
-        <div className="border border-blue-600 bg-white p-4 rounded shadow">
-          <h2 className="font-medium">Total Events Registered</h2>
-          <p className="text-xl font-bold">{overview.totalEventsRegistered}</p>
+        <div className="bg-white p-4 rounded shadow">
+          <h2>Total Events Registered</h2>
+          <p className="font-bold text-xl">
+            {overview?.totalEventsRegistered || 0}
+          </p>
         </div>
 
-        {/* Upcoming Events */}
-        <div className="border border-blue-600 bg-white p-4 rounded shadow ">
-          <h2 className="font-medium mb-2">Upcoming Events</h2>
-          {overview.upcomingEvents.length === 0 ? (
-            <p>No upcoming events</p>
+        <div className=" bg-white p-4 rounded shadow">
+          <h2 className="mb-2">Upcoming Events</h2>
+          {overview?.upcomingEvents?.length ? (
+            overview.upcomingEvents.map((event) => (
+              <div key={event._id} className="border p-2 rounded mb-2">
+                <p className="font-semibold">{event.eventTitle}</p>
+                {/* <p>{event.clubName}</p> */}
+                <p>{new Date(event.eventDate).toLocaleDateString()}</p>
+              </div>
+            ))
           ) : (
-            <ul className="space-y-2 border-blue-600 bg-white">
-              {overview.upcomingEvents.map((event) => (
-                <li key={event._id} className="border p-2 rounded">
-                  <p className="font-bold">{event.eventTitle}</p>
-                  <p>Club: {event.clubName}</p>
-                  <p>Date: {new Date(event.eventDate).toLocaleString()}</p>
-                </li>
-              ))}
-            </ul>
+            <p>No upcoming events</p>
           )}
         </div>
       </div>

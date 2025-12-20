@@ -22,10 +22,12 @@ import ManageClubs from "../pages/Dashboard/Admin/ManageClubs";
 import ManageUsers from "../pages/Dashboard/Admin/ManageUsers";
 import DashboardRedirect from "../pages/Dashboard/DashboardRedirect ";
 import ViewPayments from "../pages/Dashboard/Admin/ViewPayments";
+import Profile from "../pages/Dashboard/Profile/Profile";
 import ClubMembers from "../pages/Dashboard/Manager/ClubMembers";
 import EventsManagement from "../pages/Dashboard/Manager/EventsManagement";
 import EventRegistrations from "../pages/Dashboard/Manager/EventRegistrations";
 import ManagerClubs from "../pages/Dashboard/Manager/ManagerClubs";
+import EventPaymentSuccess from "../pages/Event/EventPaymentSuccess";
 
 export const router = createBrowserRouter([
   {
@@ -53,6 +55,10 @@ export const router = createBrowserRouter([
         path: "/events/:id",
         element: <EventDetails />,
       },
+      {
+        path: "event-payment-success",
+        element: <EventPaymentSuccess />,
+      },
     ],
   },
   {
@@ -66,7 +72,7 @@ export const router = createBrowserRouter([
   {
     path: "/dashboard",
     element: (
-      <PrivateRoute allowedRoles={["member", "manager", "admin"]}>
+      <PrivateRoute allowedRoles={["member", "clubManager", "admin"]}>
         <DashboardLayout />
       </PrivateRoute>
     ),
@@ -82,7 +88,7 @@ export const router = createBrowserRouter([
         element: <MemberOverview />,
       },
       {
-        path: "member/member-my-clubs",
+        path: "member/my-clubs",
         element: <MyClubS />,
       },
       {
@@ -116,10 +122,13 @@ export const router = createBrowserRouter([
         element: <EventRegistrations />,
       },
 
-      // Admin routes
       {
         path: "admin",
-        element: <AdminOverview />,
+        element: (
+          <PrivateRoute allowedRoles={["admin"]}>
+            <AdminOverview />
+          </PrivateRoute>
+        ),
       },
       {
         path: "admin/manage-users",
@@ -142,6 +151,10 @@ export const router = createBrowserRouter([
       {
         path: "payment-cancelled",
         element: <PaymentCancelled />,
+      },
+      {
+        path: "profile",
+        element: <Profile />,
       },
     ],
   },

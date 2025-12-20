@@ -6,7 +6,7 @@ const Footer = () => {
   return (
     <footer className="bg-gray-100  text-gray-700 ">
       {/* <Container> */}
-      <div className="flex max-w-6xl mx-auto flex-col md:flex-row justify-between items-start md:items-center py-8 gap-6">
+      <div className="flex md:max-w-6xl w-11/12 mx-auto flex-col md:flex-row justify-between items-start md:items-center py-8 gap-6">
         {/* About / Logo */}
         <div className="flex flex-col gap-2">
           <h2 className="text-xl font-bold">ClubSphere</h2>

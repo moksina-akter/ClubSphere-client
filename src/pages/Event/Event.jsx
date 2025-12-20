@@ -44,7 +44,7 @@ export default function Event() {
             <p className="mt-2">{event.description.substring(0, 100)}...</p>
             <p className="mt-1 font-medium">Club: {event.clubId}</p>
             <p className="mt-1 font-medium">
-              {event.fee > 0 ? `Fee: ৳${event.fee}` : "Free"}
+              {event.eventFee > 0 ? `Fee: ৳${event.eventFee}` : "Free"}
             </p>
             <Link
               to={`/events/${event._id}`}

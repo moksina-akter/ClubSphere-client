@@ -27,20 +27,115 @@
 //     updateUserProfile,
 //     signInWithGoogle,
 //     setLoading,
+//     setUser,
 //     loading,
 //   } = auth;
 
 //   if (user) return <Navigate to="/" replace />;
+
+//   // const onSubmit = async (data) => {
+//   //   setLoading(true);
+//   //   try {
+//   //     const { name, email, password, image } = data;
+
+//   //     // 1️⃣ Create Firebase user
+//   //     const result = await createUser(email, password);
+//   //     const firebaseUser = result.user;
+
+//   //     // 2️⃣ Upload photo if exists
+//   //     let photoURL = "https://i.ibb.co/4pD1g8k/default-user.png";
+//   //     if (image && image.length > 0) {
+//   //       const formData = new FormData();
+//   //       formData.append("image", image[0]);
+//   //       const res = await axios.post(
+//   //         `https://api.imgbb.com/1/upload?key=${
+//   //           import.meta.env.VITE_IMGBB_KEY
+//   //         }`,
+//   //         formData
+//   //       );
+//   //       photoURL = res.data.data.url;
+//   //     }
+
+//   //     // 3️⃣ Update Firebase profile
+//   //     await updateUserProfile(name, photoURL);
+
+//   //     // 4️⃣ Get fresh token from newly created user
+//   //     const token = await firebaseUser.getIdToken(true);
+
+//   //     // 5️⃣ Save user to MongoDB
+//   //     await axios.post(
+//   //       `${import.meta.env.VITE_LOCALHOST}/users`,
+//   //       {
+//   //         name: firebaseUser.displayName || name,
+//   //         email: firebaseUser.email,
+//   //         photoURL: firebaseUser.photoURL || photoURL,
+//   //         uid: firebaseUser.uid,
+//   //         role: "member",
+//   //         createdAt: new Date(),
+//   //       },
+//   //       {
+//   //         headers: {
+//   //           Authorization: `Bearer ${token}`,
+//   //           "Content-Type": "application/json",
+//   //         },
+//   //       }
+//   //     );
+
+//   //     toast.success("Signup Successful");
+//   //     navigate(from, { replace: true });
+//   //   } catch (err) {
+//   //     console.error("Signup error:", err);
+//   //     toast.error(err.response?.data?.message || err.message);
+//   //   } finally {
+//   //     setLoading(false);
+//   //   }
+//   // };
+
+//   // const handleGoogleSignIn = async () => {
+//   //   setLoading(true);
+//   //   try {
+//   //     const result = await signInWithGoogle();
+//   //     const firebaseUser = result.user;
+
+//   //     const token = await firebaseUser.getIdToken(true);
+
+//   //     await axios.post(
+//   //       `${import.meta.env.VITE_LOCALHOST}/users`,
+//   //       {
+//   //         name: firebaseUser.displayName,
+//   //         email: firebaseUser.email,
+//   //         photoURL: firebaseUser.photoURL,
+//   //         uid: firebaseUser.uid,
+//   //         role: "member",
+//   //         createdAt: new Date(),
+//   //       },
+//   //       {
+//   //         headers: {
+//   //           Authorization: `Bearer ${token}`,
+//   //           "Content-Type": "application/json",
+//   //         },
+//   //       }
+//   //     );
+
+//   //     toast.success("Login Successful");
+//   //     navigate(from, { replace: true });
+//   //   } catch (err) {
+//   //     console.error("Google Sign-In error:", err);
+//   //     toast.error(err.response?.data?.message || err.message);
+//   //   } finally {
+//   //     setLoading(false);
+//   //   }
+//   // };
+
 //   const onSubmit = async (data) => {
 //     setLoading(true);
 //     try {
 //       const { name, email, password, image } = data;
 
-//       // 1️⃣ Create Firebase user
+//       // Create Firebase user
 //       const result = await createUser(email, password);
-//       const firebaseUser = result.user;
 
-//       // 2️⃣ Upload photo if exists
+//       // Upload photo if any
 //       let photoURL = "https://i.ibb.co/4pD1g8k/default-user.png";
 //       if (image && image.length > 0) {
 //         const formData = new FormData();
@@ -54,72 +149,66 @@
 //         photoURL = res.data.data.url;
 //       }
 
-//       // 3️⃣ Update Firebase profile
+//       // Update Firebase profile
 //       await updateUserProfile(name, photoURL);
 
-//       // 4️⃣ Get fresh token from newly created user
-//       const token = await firebaseUser.getIdToken(true);
+//       // Save to MongoDB (POST only once)
+//       const currentUser = auth.currentUser;
+//       const token = await currentUser.getIdToken();
 
-//       // 5️⃣ Save user to MongoDB
 //       await axios.post(
 //         `${import.meta.env.VITE_LOCALHOST}/users`,
 //         {
-//           name: firebaseUser.displayName || name,
-//           email: firebaseUser.email,
-//           photoURL: firebaseUser.photoURL || photoURL,
-//           uid: firebaseUser.uid,
+//           name: currentUser.displayName,
+//           email: currentUser.email,
+//           photoURL: currentUser.photoURL,
+//           uid: currentUser.uid,
 //           role: "member",
 //           createdAt: new Date(),
 //         },
-//         {
-//           headers: {
-//             Authorization: `Bearer ${token}`,
-//             "Content-Type": "application/json",
-//           },
-//         }
+//         { headers: { Authorization: `Bearer ${token}` } }
 //       );
+
+//       // update local state to prevent AuthProvider POST
+//       setUser({ ...currentUser, role: "member" });
 
 //       toast.success("Signup Successful");
 //       navigate(from, { replace: true });
 //     } catch (err) {
-//       console.error("Signup error:", err);
-//       toast.error(err.response?.data?.message || err.message);
+//       console.log(err);
+//       toast.error(err.message);
 //     } finally {
 //       setLoading(false);
 //     }
 //   };
-
 //   const handleGoogleSignIn = async () => {
 //     setLoading(true);
 //     try {
 //       const result = await signInWithGoogle();
-//       const firebaseUser = result.user;
+//       const currentUser = result.user;
+//       const token = await currentUser.getIdToken();
 
-//       const token = await firebaseUser.getIdToken(true);
-
+//       // POST to MongoDB only if first time login
 //       await axios.post(
 //         `${import.meta.env.VITE_LOCALHOST}/users`,
 //         {
-//           name: firebaseUser.displayName,
-//           email: firebaseUser.email,
-//           photoURL: firebaseUser.photoURL,
-//           uid: firebaseUser.uid,
+//           name: currentUser.displayName,
+//           email: currentUser.email,
+//           photoURL: currentUser.photoURL,
+//           uid: currentUser.uid,
 //           role: "member",
 //           createdAt: new Date(),
 //         },
-//         {
-//           headers: {
-//             Authorization: `Bearer ${token}`,
-//             "Content-Type": "application/json",
-//           },
-//         }
+//         { headers: { Authorization: `Bearer ${token}` } }
 //       );
+
+//       setUser({ ...currentUser, role: "member" });
 
 //       toast.success("Login Successful");
 //       navigate(from, { replace: true });
 //     } catch (err) {
-//       console.error("Google Sign-In error:", err);
-//       toast.error(err.response?.data?.message || err.message);
+//       console.log(err);
+//       toast.error(err.message);
 //     } finally {
 //       setLoading(false);
 //     }
@@ -231,6 +320,7 @@
 // };
 
 // export default SignUp;
+
 import { Link, useLocation, useNavigate, Navigate } from "react-router";
 import { FcGoogle } from "react-icons/fc";
 import useAuth from "../../hooks/useAuth";
@@ -239,6 +329,7 @@ import { TbFidgetSpinner } from "react-icons/tb";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import LoadingSpinner from "../../components/Shared/LoadingSpinner";
+import { imageUpload } from "../utilis";
 
 const SignUp = () => {
   const {
@@ -254,186 +345,112 @@ const SignUp = () => {
 
   if (!auth || auth.loading) return <LoadingSpinner />;
 
-  const {
-    createUser,
-    user,
-    updateUserProfile,
-    signInWithGoogle,
-    setLoading,
-    setUser,
-    loading,
-  } = auth;
+  const { createUser, user, signInWithGoogle, setLoading, setUser, loading } =
+    auth;
 
   if (user) return <Navigate to="/" replace />;
 
   // const onSubmit = async (data) => {
-  //   setLoading(true);
   //   try {
-  //     const { name, email, password, image } = data;
+  //     const { name, email, password, role, image } = data;
+  //     const imageURL = await imageUpload(image[0]);
 
-  //     // 1️⃣ Create Firebase user
+  //     // Firebase create user
   //     const result = await createUser(email, password);
-  //     const firebaseUser = result.user;
 
-  //     // 2️⃣ Upload photo if exists
-  //     let photoURL = "https://i.ibb.co/4pD1g8k/default-user.png";
-  //     if (image && image.length > 0) {
-  //       const formData = new FormData();
-  //       formData.append("image", image[0]);
-  //       const res = await axios.post(
-  //         `https://api.imgbb.com/1/upload?key=${
-  //           import.meta.env.VITE_IMGBB_KEY
-  //         }`,
-  //         formData
-  //       );
-  //       photoURL = res.data.data.url;
-  //     }
+  //     // Firebase user object থেকে token
+  //     const token = await result.user.getIdToken(true);
 
-  //     // 3️⃣ Update Firebase profile
-  //     await updateUserProfile(name, photoURL);
-
-  //     // 4️⃣ Get fresh token from newly created user
-  //     const token = await firebaseUser.getIdToken(true);
-
-  //     // 5️⃣ Save user to MongoDB
+  //     // Save user in backend
   //     await axios.post(
   //       `${import.meta.env.VITE_LOCALHOST}/users`,
   //       {
-  //         name: firebaseUser.displayName || name,
-  //         email: firebaseUser.email,
-  //         photoURL: firebaseUser.photoURL || photoURL,
-  //         uid: firebaseUser.uid,
-  //         role: "member",
-  //         createdAt: new Date(),
+  //         name,
+  //         email,
+  //         role,
+  //         image: imageURL,
+  //         uid: result.user.uid,
   //       },
   //       {
   //         headers: {
   //           Authorization: `Bearer ${token}`,
-  //           "Content-Type": "application/json",
   //         },
   //       }
   //     );
 
   //     toast.success("Signup Successful");
-  //     navigate(from, { replace: true });
   //   } catch (err) {
-  //     console.error("Signup error:", err);
-  //     toast.error(err.response?.data?.message || err.message);
-  //   } finally {
-  //     setLoading(false);
+  //     console.log(err);
+  //     if (err.code === "auth/email-already-in-use") {
+  //       toast.error("Email already exists. Please login.");
+  //     } else if (err.response?.status === 403) {
+  //       toast.error("Forbidden: Cannot create user. Check backend auth.");
+  //     } else {
+  //       toast.error(err.message || "Something went wrong");
+  //     }
   //   }
   // };
-
-  // const handleGoogleSignIn = async () => {
-  //   setLoading(true);
-  //   try {
-  //     const result = await signInWithGoogle();
-  //     const firebaseUser = result.user;
-
-  //     const token = await firebaseUser.getIdToken(true);
-
-  //     await axios.post(
-  //       `${import.meta.env.VITE_LOCALHOST}/users`,
-  //       {
-  //         name: firebaseUser.displayName,
-  //         email: firebaseUser.email,
-  //         photoURL: firebaseUser.photoURL,
-  //         uid: firebaseUser.uid,
-  //         role: "member",
-  //         createdAt: new Date(),
-  //       },
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //           "Content-Type": "application/json",
-  //         },
-  //       }
-  //     );
-
-  //     toast.success("Login Successful");
-  //     navigate(from, { replace: true });
-  //   } catch (err) {
-  //     console.error("Google Sign-In error:", err);
-  //     toast.error(err.response?.data?.message || err.message);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
   const onSubmit = async (data) => {
-    setLoading(true);
     try {
-      const { name, email, password, image } = data;
+      const { name, email, password, role, image } = data;
+      const imageURL = image
+        ? await imageUpload(image[0])
+        : "https://i.ibb.co/4pD1g8k/default-user.png";
 
-      // Create Firebase user
+      // Firebase create user
       const result = await createUser(email, password);
 
-      // Upload photo if any
-      let photoURL = "https://i.ibb.co/4pD1g8k/default-user.png";
-      if (image && image.length > 0) {
-        const formData = new FormData();
-        formData.append("image", image[0]);
-        const res = await axios.post(
-          `https://api.imgbb.com/1/upload?key=${
-            import.meta.env.VITE_IMGBB_KEY
-          }`,
-          formData
-        );
-        photoURL = res.data.data.url;
-      }
+      // Firebase token
+      const token = await result.user.getIdToken(true);
 
-      // Update Firebase profile
-      await updateUserProfile(name, photoURL);
-
-      // Save to MongoDB (POST only once)
-      const currentUser = auth.currentUser;
-      const token = await currentUser.getIdToken();
-
+      // Save user in backend
       await axios.post(
         `${import.meta.env.VITE_LOCALHOST}/users`,
         {
-          name: currentUser.displayName,
-          email: currentUser.email,
-          photoURL: currentUser.photoURL,
-          uid: currentUser.uid,
-          role: "member",
-          createdAt: new Date(),
+          name,
+          email,
+          role: role || "member",
+          image: imageURL,
+          uid: result.user.uid,
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      // update local state to prevent AuthProvider POST
-      setUser({ ...currentUser, role: "member" });
+      setUser({ ...result.user, role: role || "member" });
 
       toast.success("Signup Successful");
       navigate(from, { replace: true });
     } catch (err) {
       console.log(err);
-      toast.error(err.message);
-    } finally {
-      setLoading(false);
+      if (err.code === "auth/email-already-in-use") {
+        toast.error("Email already exists. Please login.");
+      } else if (err.response?.status === 403) {
+        toast.error("Forbidden: Cannot create user. Check backend auth.");
+      } else {
+        toast.error(err.message || "Something went wrong");
+      }
     }
   };
+
   const handleGoogleSignIn = async () => {
     setLoading(true);
     try {
       const result = await signInWithGoogle();
       const currentUser = result.user;
-      const token = await currentUser.getIdToken();
-
+      const token = await currentUser.getIdToken(true);
+      const saveUser = {
+        name: currentUser.displayName || "",
+        email: currentUser.email,
+        photoURL: currentUser.photoURL || "",
+        uid: currentUser.uid,
+        role: "member",
+        createdAt: new Date(),
+      };
       // POST to MongoDB only if first time login
-      await axios.post(
-        `${import.meta.env.VITE_LOCALHOST}/users`,
-        {
-          name: currentUser.displayName,
-          email: currentUser.email,
-          photoURL: currentUser.photoURL,
-          uid: currentUser.uid,
-          role: "member",
-          createdAt: new Date(),
-        },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+
+      await axios.post(`${import.meta.env.VITE_LOCALHOST}/users`, saveUser, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       setUser({ ...currentUser, role: "member" });
 

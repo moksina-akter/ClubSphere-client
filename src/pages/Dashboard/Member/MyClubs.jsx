@@ -1,35 +1,74 @@
+// import { useQuery } from "@tanstack/react-query";
+// import useAxiosSecure from "../../../hooks/useAxiosSecure";
+
+// const MyClubs = () => {
+//   const axiosSecure = useAxiosSecure(); // hook call
+
+//   const { data: memberships, isLoading } = useQuery({
+//     queryKey: ["memberships"],
+//     queryFn: async () => {
+//       const res = await axiosSecure.get("/member/my-clubs");
+//       return res.data;
+//     },
+//     enabled: !!axiosSecure, // ensure axiosSecure ready
+//   });
+
+//   if (isLoading) return <p>Loading...</p>;
+//   if (!memberships || memberships.length === 0)
+//     return <p>No club registered yet.</p>;
+
+//   return (
+//     <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+//       {memberships.map((m) => (
+//         <div key={m._id} className="p-4 bg-white rounded shadow">
+//           <h2 className="font-bold">{m.clubName}</h2>
+//           <p>Location: {m.location}</p>
+//           <p>Status: {m.status}</p>
+//           <p>Membership Fee: ${m.membershipFee}</p>
+//           {m.expiryDate && (
+//             <p>Expiry Date: {new Date(m.expiryDate).toLocaleDateString()}</p>
+//           )}
+//         </div>
+//       ))}
+//     </div>
+//   );
+// };
+
+// export default MyClubs;
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import useAuth from "../../../hooks/useAuth";
+import useAxiosSecure from "../../../hooks/useAxiosSecure"; // ✅ secure axios
 import { Link } from "react-router";
 
 const MyClubs = () => {
   const { user } = useAuth();
+  const axiosSecure = useAxiosSecure(); // ✅ custom secure axios instance
 
-  const { data: memberships } = useQuery({
+  const {
+    data: memberships,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ["memberships", user?.email],
     queryFn: async () => {
-      const token = await user.getIdToken(); // 🔥 Firebase token
-      const res = await axios.get(
-        `${import.meta.env.VITE_LOCALHOST}/member/my-clubs`,
-        {
-          params: { email: user.email },
-          headers: {
-            Authorization: `Bearer ${token}`, // 🔥 Send token
-          },
-        }
-      );
+      if (!user?.email) return [];
+      const res = await axiosSecure.get("/member/my-clubs", {
+        params: { email: user.email }, // backend এ query
+      });
       return res.data;
     },
     enabled: !!user?.email,
   });
 
-  if (!memberships) return <p>Loading...</p>;
+  if (isLoading) return <p>Loading your clubs...</p>;
+  if (error) return <p>Error fetching clubs: {error.message}</p>;
+  if (!memberships || memberships.length === 0)
+    return <p>No club registered yet.</p>;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
       {memberships.map((m) => (
-        <div key={m._id} className=" p-4 bg-white rounded shadow">
+        <div key={m._id} className="p-4 bg-white rounded shadow">
           <h2 className="font-bold">{m.clubName}</h2>
           <p>Location: {m.location}</p>
           <p>Status: {m.status}</p>

@@ -1,26 +1,35 @@
 // import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 // import axios from "axios";
 // import useAuth from "../../../hooks/useAuth";
+// import toast from "react-hot-toast";
 
 // const EventRegistrations = () => {
 //   const { user } = useAuth();
 //   const queryClient = useQueryClient();
 
-//   // Fetch registrations for manager's events
-//   const { data: registrations, isLoading } = useQuery({
+//   const {
+//     data: registrations = [],
+//     isLoading,
+//     isError,
+//     error,
+//   } = useQuery({
 //     queryKey: ["eventRegistrations", user?.email],
 //     queryFn: async () => {
+//       if (!user) return [];
+//       const token = await user.getIdToken(); // get Firebase ID token
 //       const res = await axios.get(
 //         `${import.meta.env.VITE_LOCALHOST}/manager/event-registrations`,
-//         { params: { email: user.email } }
+//         {
+//           params: { email: user.email },
+//           headers: { Authorization: `Bearer ${token}` },
+//         }
 //       );
-//       console.log(registrations);
 //       return res.data;
 //     },
 //     enabled: !!user?.email,
 //   });
 
-//   // Update registration status mutation (optional: cancel / mark attended)
+//   // Update registration status mutation
 //   const updateStatusMutation = useMutation({
 //     mutationFn: async ({ registrationId, status }) =>
 //       axios.put(
@@ -29,14 +38,21 @@
 //         }/manager/event-registrations/${registrationId}`,
 //         { status }
 //       ),
-//     onSuccess: () => queryClient.invalidateQueries(["eventRegistrations"]),
+//     onSuccess: () => {
+//       toast.success("Status updated successfully");
+//       queryClient.invalidateQueries(["eventRegistrations", user?.email]);
+//     },
+//     onError: () => toast.error("Failed to update status"),
 //   });
 
+//   if (!user) return <p>Please log in to view registrations.</p>;
 //   if (isLoading) return <p>Loading registrations...</p>;
+//   if (isError) return <p>Error fetching registrations: {error.message}</p>;
 
 //   return (
 //     <div>
 //       <h1 className="text-2xl font-bold mb-4">Event Registrations</h1>
+
 //       {registrations.length === 0 ? (
 //         <p>No registrations found.</p>
 //       ) : (
@@ -52,7 +68,7 @@
 //               </tr>
 //             </thead>
 //             <tbody>
-//               {registrations.map((reg) => (
+//               {registrations?.map((reg) => (
 //                 <tr key={reg._id} className="border-b">
 //                   <td className="p-2 border">{reg.eventTitle}</td>
 //                   <td className="p-2 border">{reg.userEmail}</td>
@@ -100,12 +116,13 @@
 
 // export default EventRegistrations;
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
+import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import useAuth from "../../../hooks/useAuth";
 import toast from "react-hot-toast";
 
 const EventRegistrations = () => {
   const { user } = useAuth();
+  const axiosSecure = useAxiosSecure();
   const queryClient = useQueryClient();
 
   const {
@@ -116,29 +133,23 @@ const EventRegistrations = () => {
   } = useQuery({
     queryKey: ["eventRegistrations", user?.email],
     queryFn: async () => {
-      if (!user) return [];
-      const token = await user.getIdToken(); // get Firebase ID token
-      const res = await axios.get(
-        `${import.meta.env.VITE_LOCALHOST}/manager/event-registrations`,
-        {
-          params: { email: user.email },
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      if (!user?.email) return [];
+
+      const res = await axiosSecure.get("/event-registrations", {
+        params: { email: user.email },
+      });
+
       return res.data;
     },
     enabled: !!user?.email,
   });
 
-  // Update registration status mutation
   const updateStatusMutation = useMutation({
-    mutationFn: async ({ registrationId, status }) =>
-      axios.put(
-        `${
-          import.meta.env.VITE_LOCALHOST
-        }/manager/event-registrations/${registrationId}`,
-        { status }
-      ),
+    mutationFn: async ({ registrationId, status }) => {
+      return axiosSecure.put(`/manager/event-registrations/${registrationId}`, {
+        status,
+      });
+    },
     onSuccess: () => {
       toast.success("Status updated successfully");
       queryClient.invalidateQueries(["eventRegistrations", user?.email]);

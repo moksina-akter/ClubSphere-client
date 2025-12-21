@@ -21,7 +21,7 @@
 
 //   if (!auth || auth.loading) return <LoadingSpinner />;
 
-//   const { signIn, signInWithGoogle, loading, user, setLoading } = auth;
+//   const { signIn, signInWithGoogle, loading, user, setUser, setLoading } = auth;
 
 //   if (user) return <Navigate to={from} replace={true} />;
 
@@ -42,30 +42,69 @@
 //   // ============================
 //   //        GOOGLE LOGIN
 //   // ============================
+//   // const handleGoogleSignIn = async () => {
+//   //   try {
+//   //     const result = await signInWithGoogle();
+
+//   //     // SAVE USER IF NEW
+//   //     const saveUser = {
+//   //       name: result.displayName || "",
+//   //       email: result.email,
+//   //       photoURL: result.photoURL || "",
+//   //       uid: result.uid, // FIXED 🔥
+//   //       role: "member",
+//   //       createdAt: new Date(),
+//   //     };
+//   //     await axios.post(`${import.meta.env.VITE_LOCALHOST}/users`, saveUser, {
+//   //       headers: {
+//   //         "Content-Type": "application/json",
+//   //       },
+//   //     });
+
+//   //     toast.success("Login Successful");
+//   //     navigate(from, { replace: true });
+//   //   } catch (err) {
+//   //     console.log(err);
+//   //     toast.error(err.message);
+//   //   } finally {
+//   //     setLoading(false);
+//   //   }
+//   // };
 //   const handleGoogleSignIn = async () => {
+//     setLoading(true);
 //     try {
 //       const result = await signInWithGoogle();
+//       const currentUser = result.user;
 
-//       // SAVE USER IF NEW
+//       // 🔑 Get fresh Firebase token
+//       const token = await currentUser.getIdToken(true);
+
+//       // ✅ Prepare user data
 //       const saveUser = {
-//         name: result.displayName || "",
-//         email: result.email,
-//         photoURL: result.photoURL || "",
-//         uid: result.uid, // FIXED 🔥
+//         name: currentUser.displayName || "",
+//         email: currentUser.email,
+//         photoURL: currentUser.photoURL || "",
+//         uid: currentUser.uid,
 //         role: "member",
 //         createdAt: new Date(),
 //       };
+
+//       // ✅ POST to backend with Authorization header
 //       await axios.post(`${import.meta.env.VITE_LOCALHOST}/users`, saveUser, {
 //         headers: {
+//           Authorization: `Bearer ${token}`,
 //           "Content-Type": "application/json",
 //         },
 //       });
 
+//       // ✅ Update local state
+//       setUser({ ...currentUser, role: "member" });
+
 //       toast.success("Login Successful");
 //       navigate(from, { replace: true });
 //     } catch (err) {
-//       console.log(err);
-//       toast.error(err.message);
+//       console.error("Google SignIn Error:", err);
+//       toast.error(err.response?.data?.message || err.message);
 //     } finally {
 //       setLoading(false);
 //     }
@@ -141,12 +180,12 @@
 
 // export default Login;
 import { Link, Navigate, useLocation, useNavigate } from "react-router";
-import toast from "react-hot-toast";
-import LoadingSpinner from "../../components/Shared/LoadingSpinner";
-import useAuth from "../../hooks/useAuth";
-import { FcGoogle } from "react-icons/fc";
 import { useForm } from "react-hook-form";
+import { FcGoogle } from "react-icons/fc";
 import { TbFidgetSpinner } from "react-icons/tb";
+import { toast } from "react-hot-toast";
+import useAuth from "../../hooks/useAuth";
+import LoadingSpinner from "../../components/Shared/LoadingSpinner";
 import axios from "axios";
 
 const Login = () => {
@@ -155,97 +194,84 @@ const Login = () => {
     handleSubmit,
     formState: { errors },
   } = useForm();
-
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state || "/";
   const auth = useAuth();
-
   if (!auth || auth.loading) return <LoadingSpinner />;
 
-  const { signIn, signInWithGoogle, loading, user, setUser, setLoading } = auth;
-
-  if (user) return <Navigate to={from} replace={true} />;
+  const { signIn, signInWithGoogle, user, setUser, loading, setLoading } = auth;
+  if (user) return <Navigate to={from} replace />;
 
   const onSubmit = async (data) => {
+    setLoading(true);
     try {
       await signIn(data.email, data.password);
+
+      // ✅ After login, ensure backend has user info
+      const currentUser = auth.user; // logged-in Firebase user
+      const token = await currentUser.getIdToken(true);
+
+      await axios.post(
+        `${import.meta.env.VITE_LOCALHOST}/users`,
+        {
+          name: currentUser.displayName || "",
+          email: currentUser.email,
+          photoURL: currentUser.photoURL || "",
+          uid: currentUser.uid,
+          role: "member",
+          createdAt: new Date(),
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       toast.success("Login Successful");
       navigate(from, { replace: true });
     } catch (err) {
-      console.log(err);
-      toast.error(err.message);
+      console.error(err);
+      toast.error(err.response?.data?.message || err.message);
     } finally {
       setLoading(false);
     }
   };
 
-  // ============================
-  //        GOOGLE LOGIN
-  // ============================
-  // const handleGoogleSignIn = async () => {
-  //   try {
-  //     const result = await signInWithGoogle();
-
-  //     // SAVE USER IF NEW
-  //     const saveUser = {
-  //       name: result.displayName || "",
-  //       email: result.email,
-  //       photoURL: result.photoURL || "",
-  //       uid: result.uid, // FIXED 🔥
-  //       role: "member",
-  //       createdAt: new Date(),
-  //     };
-  //     await axios.post(`${import.meta.env.VITE_LOCALHOST}/users`, saveUser, {
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //     });
-
-  //     toast.success("Login Successful");
-  //     navigate(from, { replace: true });
-  //   } catch (err) {
-  //     console.log(err);
-  //     toast.error(err.message);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
   const handleGoogleSignIn = async () => {
     setLoading(true);
     try {
       const result = await signInWithGoogle();
       const currentUser = result.user;
 
-      // 🔑 Get fresh Firebase token
       const token = await currentUser.getIdToken(true);
 
-      // ✅ Prepare user data
-      const saveUser = {
-        name: currentUser.displayName || "",
-        email: currentUser.email,
-        photoURL: currentUser.photoURL || "",
-        uid: currentUser.uid,
-        role: "member",
-        createdAt: new Date(),
-      };
-
-      // ✅ POST to backend with Authorization header
-      await axios.post(`${import.meta.env.VITE_LOCALHOST}/users`, saveUser, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
+      // ✅ Save user in backend if first time
+      await axios.post(
+        `${import.meta.env.VITE_LOCALHOST}/users`,
+        {
+          name: currentUser.displayName || "",
+          email: currentUser.email,
+          photoURL: currentUser.photoURL || "",
+          uid: currentUser.uid,
+          role: "member",
+          createdAt: new Date(),
         },
-      });
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-      // ✅ Update local state
       setUser({ ...currentUser, role: "member" });
-
       toast.success("Login Successful");
       navigate(from, { replace: true });
     } catch (err) {
-      console.error("Google SignIn Error:", err);
+      console.error(err);
       toast.error(err.response?.data?.message || err.message);
     } finally {
       setLoading(false);
@@ -263,35 +289,34 @@ const Login = () => {
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          {/* EMAIL */}
           <div>
             <label className="block mb-2 text-sm">Email</label>
             <input
-              {...register("email", { required: "Email is required" })}
+              {...register("email", { required: true })}
               type="email"
               className="w-full px-3 py-2 border rounded-md bg-gray-200"
-              placeholder="Enter email"
             />
             {errors.email && (
-              <p className="text-red-500 text-xs">{errors.email.message}</p>
+              <p className="text-red-500 text-xs">Email is required</p>
             )}
           </div>
 
-          {/* PASSWORD */}
           <div>
             <label className="block mb-2 text-sm">Password</label>
             <input
-              {...register("password", { required: "Password is required" })}
+              {...register("password", { required: true })}
               type="password"
               className="w-full px-3 py-2 border rounded-md bg-gray-200"
-              placeholder="*******"
             />
             {errors.password && (
-              <p className="text-red-500 text-xs">{errors.password.message}</p>
+              <p className="text-red-500 text-xs">Password is required</p>
             )}
           </div>
 
-          <button className="bg-blue-600 hover:bg-blue-700 w-full rounded-md py-3 text-white">
+          <button
+            type="submit"
+            className="bg-blue-600 hover:bg-blue-700 w-full rounded-md py-3 text-white"
+          >
             {loading ? (
               <TbFidgetSpinner className="animate-spin m-auto" />
             ) : (
@@ -300,7 +325,6 @@ const Login = () => {
           </button>
         </form>
 
-        {/* GOOGLE */}
         <div
           onClick={handleGoogleSignIn}
           className="flex justify-center items-center mt-4 space-x-2 border p-2 rounded-md cursor-pointer"
@@ -310,8 +334,8 @@ const Login = () => {
         </div>
 
         <p className="text-center text-sm text-gray-400 mt-2">
-          Don’t have an account?
-          <Link to="/register" className="text-blue-600 ">
+          Don’t have an account?{" "}
+          <Link to="/register" className="text-blue-600">
             Register
           </Link>
         </p>

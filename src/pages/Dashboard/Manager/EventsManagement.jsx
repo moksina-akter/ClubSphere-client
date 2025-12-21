@@ -16,11 +16,12 @@
 //     location: "",
 //     isPaid: false,
 //     eventFee: 0,
+//     maxAttendees: 0,
 //   });
 
-//   const [editingEvent, setEditingEvent] = useState(null); // Event being edited
+//   const [editingEvent, setEditingEvent] = useState(null);
 
-//   // ================= FETCH MY CLUBS =================
+//   // ========== Fetch manager's clubs ==========
 //   const { data: myClubs = [] } = useQuery({
 //     queryKey: ["managerClubs", user?.email],
 //     enabled: !!user?.email,
@@ -30,8 +31,8 @@
 //     },
 //   });
 
-//   // ================= FETCH MY EVENTS =================
-//   const { data: events = [], refetch: refetchEvents } = useQuery({
+//   // ========== Fetch manager's events ==========
+//   const { data: events = [] } = useQuery({
 //     queryKey: ["managerEvents", user?.email],
 //     enabled: !!user?.email,
 //     queryFn: async () => {
@@ -40,7 +41,7 @@
 //     },
 //   });
 
-//   // ================= CREATE EVENT =================
+//   // ========== Create Event ==========
 //   const createEventMutation = useMutation({
 //     mutationFn: async (data) => {
 //       const res = await axiosSecure.post("/manager/create-event", data);
@@ -56,12 +57,13 @@
 //         location: "",
 //         isPaid: false,
 //         eventFee: 0,
+//         maxAttendees: 0,
 //       });
-//       refetchEvents();
+//       queryClient.invalidateQueries(["managerEvents", user?.email]);
 //     },
 //   });
 
-//   // ================= UPDATE EVENT =================
+//   // ========== Update Event ==========
 //   const updateEventMutation = useMutation({
 //     mutationFn: async ({ id, updatedData }) => {
 //       const res = await axiosSecure.put(
@@ -73,55 +75,86 @@
 //     onSuccess: () => {
 //       alert("Event updated successfully");
 //       setEditingEvent(null);
-//       refetchEvents();
+//       queryClient.invalidateQueries(["managerEvents", user?.email]);
 //     },
 //   });
 
-//   // ================= DELETE EVENT =================
+//   // ========== Delete Event ==========
 //   const deleteEventMutation = useMutation({
 //     mutationFn: async (id) => {
+//       if (!window.confirm("Are you sure you want to delete this event?"))
+//         return;
 //       const res = await axiosSecure.delete(`/manager/my-events/${id}`);
 //       return res.data;
 //     },
 //     onSuccess: () => {
 //       alert("Event deleted successfully");
-//       refetchEvents();
+//       queryClient.invalidateQueries(["managerEvents", user?.email]);
 //     },
 //   });
 
-//   const handleCreateEvent = () => {
+//   const handleCreateOrUpdate = () => {
 //     if (!eventForm.clubId) return alert("Select a club");
 //     if (!eventForm.title) return alert("Enter event title");
 //     if (!eventForm.eventDate) return alert("Enter event date");
+//     if (eventForm.isPaid && (!eventForm.eventFee || eventForm.eventFee <= 0))
+//       return alert("Enter a valid event fee");
+//     if (!eventForm.maxAttendees || eventForm.maxAttendees <= 0)
+//       return alert("Enter max attendees");
 
-//     createEventMutation.mutate({
+//     const payload = {
 //       ...eventForm,
 //       eventFee: eventForm.isPaid ? Number(eventForm.eventFee) : 0,
+//       maxAttendees: Number(eventForm.maxAttendees),
+//     };
+
+//     if (editingEvent) {
+//       updateEventMutation.mutate({
+//         id: editingEvent._id,
+//         updatedData: payload,
+//       });
+//     } else {
+//       createEventMutation.mutate(payload);
+//     }
+//   };
+
+//   const handleEditClick = (event) => {
+//     setEditingEvent(event);
+//     setEventForm({
+//       clubId: event.clubId,
+//       title: event.title,
+//       description: event.description,
+//       eventDate: new Date(event.eventDate).toISOString().slice(0, 16),
+//       location: event.location,
+//       isPaid: event.isPaid,
+//       eventFee: event.eventFee || 0,
+//       maxAttendees: event.maxAttendees || 0,
 //     });
 //   };
 
-//   const handleUpdateEvent = () => {
-//     if (!editingEvent) return;
-//     if (!editingEvent.title) return alert("Title is required");
-//     if (!editingEvent.clubId) return alert("Select a club");
-//     if (!editingEvent.eventDate) return alert("Enter event date");
-
-//     updateEventMutation.mutate({
-//       id: editingEvent._id,
-//       updatedData: {
-//         ...editingEvent,
-//         eventFee: editingEvent.isPaid ? Number(editingEvent.eventFee) : 0,
-//       },
+//   const handleCancelEdit = () => {
+//     setEditingEvent(null);
+//     setEventForm({
+//       clubId: "",
+//       title: "",
+//       description: "",
+//       eventDate: "",
+//       location: "",
+//       isPaid: false,
+//       eventFee: 0,
+//       maxAttendees: 0,
 //     });
 //   };
 
 //   return (
-//     <div className="max-w-4xl mx-auto p-4">
+//     <div className="max-w-6xl mx-auto p-4">
 //       <h1 className="text-2xl font-bold mb-4">Events Management</h1>
 
-//       {/* Create Event Form */}
+//       {/* Create / Edit Event Form */}
 //       <div className="bg-white p-4 rounded shadow mb-6">
-//         <h2 className="text-xl font-semibold mb-2">Create Event</h2>
+//         <h2 className="text-xl font-semibold mb-2">
+//           {editingEvent ? "Edit Event" : "Create Event"}
+//         </h2>
 
 //         <select
 //           className="border p-2 rounded w-full mb-2"
@@ -199,176 +232,71 @@
 //           />
 //         )}
 
-//         <button
-//           className="bg-blue-600 text-white px-4 py-2 rounded"
-//           onClick={handleCreateEvent}
-//         >
-//           Create Event
-//         </button>
-//       </div>
+//         <input
+//           type="number"
+//           placeholder="Max Attendees"
+//           className="border p-2 rounded w-full mb-2"
+//           value={eventForm.maxAttendees}
+//           onChange={(e) =>
+//             setEventForm({ ...eventForm, maxAttendees: e.target.value })
+//           }
+//         />
 
-//       {/* My Events */}
-//       <div className="bg-white p-4 rounded shadow">
-//         <h2 className="text-xl font-semibold mb-2">My Events</h2>
-//         {events.length === 0 ? (
-//           <p>No events found</p>
-//         ) : (
-//           <ul className="space-y-2">
-//             {events.map((event) => (
-//               <li
-//                 key={event._id}
-//                 className="border p-2 rounded flex justify-between items-center"
-//               >
-//                 <div>
-//                   <p className="font-semibold">{event.title}</p>
-//                   <p>
-//                     {new Date(event.eventDate).toLocaleString()} -{" "}
-//                     {event.location}
-//                   </p>
-//                   <p>
-//                     Club:{" "}
-//                     {myClubs.find((c) => c._id === event.clubId)?.clubName ||
-//                       "Unknown Club"}
-//                   </p>
-//                   {event.isPaid && <p>Fee: ${event.eventFee}</p>}
-//                 </div>
-
-//                 <div className="flex gap-2">
-//                   {/* Update Button */}
-//                   <button
-//                     className="bg-yellow-500 text-white px-2 py-1 rounded"
-//                     onClick={() => setEditingEvent(event)}
-//                   >
-//                     Edit
-//                   </button>
-
-//                   {/* Delete Button */}
-//                   <button
-//                     className="bg-red-600 text-white px-2 py-1 rounded"
-//                     onClick={() => {
-//                       if (
-//                         window.confirm(
-//                           "Are you sure you want to delete this event?"
-//                         )
-//                       ) {
-//                         deleteEventMutation.mutate(event._id);
-//                       }
-//                     }}
-//                   >
-//                     Delete
-//                   </button>
-//                 </div>
-//               </li>
-//             ))}
-//           </ul>
-//         )}
-//       </div>
-
-//       {/* Edit Modal */}
-//       {editingEvent && (
-//         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-//           <div className="bg-white p-6 rounded w-96 relative">
-//             <h2 className="text-lg font-semibold mb-4">Edit Event</h2>
-
-//             <select
-//               className="border p-2 rounded w-full mb-2"
-//               value={editingEvent.clubId}
-//               onChange={(e) =>
-//                 setEditingEvent({ ...editingEvent, clubId: e.target.value })
-//               }
+//         <div className="flex gap-2">
+//           <button
+//             className="bg-blue-600 text-white px-4 py-2 rounded"
+//             onClick={handleCreateOrUpdate}
+//           >
+//             {editingEvent ? "Save Changes" : "Create Event"}
+//           </button>
+//           {editingEvent && (
+//             <button
+//               className="bg-gray-500 text-white px-4 py-2 rounded"
+//               onClick={handleCancelEdit}
 //             >
-//               <option value="">Select Approved Club</option>
-//               {myClubs.map((club) => (
-//                 <option key={club._id} value={club._id}>
-//                   {club.clubName}
-//                 </option>
-//               ))}
-//             </select>
+//               Cancel
+//             </button>
+//           )}
+//         </div>
+//       </div>
 
-//             <input
-//               type="text"
-//               placeholder="Event Title"
-//               className="border p-2 rounded w-full mb-2"
-//               value={editingEvent.title}
-//               onChange={(e) =>
-//                 setEditingEvent({ ...editingEvent, title: e.target.value })
-//               }
-//             />
-
-//             <textarea
-//               placeholder="Description"
-//               className="border p-2 rounded w-full mb-2"
-//               value={editingEvent.description}
-//               onChange={(e) =>
-//                 setEditingEvent({
-//                   ...editingEvent,
-//                   description: e.target.value,
-//                 })
-//               }
-//             />
-
-//             <input
-//               type="datetime-local"
-//               className="border p-2 rounded w-full mb-2"
-//               value={editingEvent.eventDate}
-//               onChange={(e) =>
-//                 setEditingEvent({ ...editingEvent, eventDate: e.target.value })
-//               }
-//             />
-
-//             <input
-//               type="text"
-//               placeholder="Location"
-//               className="border p-2 rounded w-full mb-2"
-//               value={editingEvent.location}
-//               onChange={(e) =>
-//                 setEditingEvent({ ...editingEvent, location: e.target.value })
-//               }
-//             />
-
-//             <label className="block mb-2">
-//               <input
-//                 type="checkbox"
-//                 checked={editingEvent.isPaid}
-//                 onChange={(e) =>
-//                   setEditingEvent({ ...editingEvent, isPaid: e.target.checked })
-//                 }
-//               />{" "}
-//               Paid Event
-//             </label>
-
-//             {editingEvent.isPaid && (
-//               <input
-//                 type="number"
-//                 placeholder="Event Fee"
-//                 className="border p-2 rounded w-full mb-2"
-//                 value={editingEvent.eventFee}
-//                 onChange={(e) =>
-//                   setEditingEvent({
-//                     ...editingEvent,
-//                     eventFee: e.target.value,
-//                   })
-//                 }
-//               />
-//             )}
-
-//             <div className="flex justify-end gap-2 mt-4">
+//       {/* My Events Grid */}
+//       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+//         {events.length === 0 && <p>No events found</p>}
+//         {events.map((event) => (
+//           <div
+//             key={event._id}
+//             className="bg-white p-4 rounded shadow flex flex-col justify-between"
+//           >
+//             <div>
+//               <p className="font-semibold text-lg">{event.title}</p>
+//               <p>{new Date(event.eventDate).toLocaleString()}</p>
+//               <p>Location: {event.location}</p>
+//               <p>
+//                 Club:{" "}
+//                 {myClubs.find((c) => c._id === event.clubId)?.clubName ||
+//                   "Unknown Club"}
+//               </p>
+//               {event.isPaid && <p>Fee: ${event.eventFee}</p>}
+//               <p>Max Attendees: {event.maxAttendees}</p>
+//             </div>
+//             <div className="flex gap-2 mt-2">
 //               <button
-//                 className="bg-gray-400 text-white px-4 py-2 rounded"
-//                 onClick={() => setEditingEvent(null)}
+//                 className="bg-green-600 text-white px-2 py-1 rounded"
+//                 onClick={() => handleEditClick(event)}
 //               >
-//                 Cancel
+//                 Update
 //               </button>
 //               <button
-//                 className="bg-green-600 text-white px-4 py-2 rounded"
-//                 onClick={handleUpdateEvent}
+//                 className="bg-red-600 text-white px-2 py-1 rounded"
+//                 onClick={() => deleteEventMutation.mutate(event._id)}
 //               >
-//                 Save
+//                 Delete
 //               </button>
 //             </div>
 //           </div>
-//         </div>
-//       )}
+//         ))}
+//       </div>
 //     </div>
 //   );
 // };
@@ -393,6 +321,7 @@ const EventsManagement = () => {
     isPaid: false,
     eventFee: 0,
     maxAttendees: 0,
+    status: "active", // default status
   });
 
   const [editingEvent, setEditingEvent] = useState(null);
@@ -434,6 +363,7 @@ const EventsManagement = () => {
         isPaid: false,
         eventFee: 0,
         maxAttendees: 0,
+        status: "active",
       });
       queryClient.invalidateQueries(["managerEvents", user?.email]);
     },
@@ -468,6 +398,15 @@ const EventsManagement = () => {
       queryClient.invalidateQueries(["managerEvents", user?.email]);
     },
   });
+
+  // ========== Toggle Status ==========
+  const toggleStatus = (event) => {
+    const newStatus = event.status === "active" ? "cancelled" : "active";
+    updateEventMutation.mutate({
+      id: event._id,
+      updatedData: { ...event, status: newStatus },
+    });
+  };
 
   const handleCreateOrUpdate = () => {
     if (!eventForm.clubId) return alert("Select a club");
@@ -505,6 +444,7 @@ const EventsManagement = () => {
       isPaid: event.isPaid,
       eventFee: event.eventFee || 0,
       maxAttendees: event.maxAttendees || 0,
+      status: event.status || "active",
     });
   };
 
@@ -519,6 +459,7 @@ const EventsManagement = () => {
       isPaid: false,
       eventFee: 0,
       maxAttendees: 0,
+      status: "active",
     });
   };
 
@@ -655,6 +596,7 @@ const EventsManagement = () => {
               </p>
               {event.isPaid && <p>Fee: ${event.eventFee}</p>}
               <p>Max Attendees: {event.maxAttendees}</p>
+              <p>Status: {event.status || "active"}</p>
             </div>
             <div className="flex gap-2 mt-2">
               <button
@@ -662,6 +604,12 @@ const EventsManagement = () => {
                 onClick={() => handleEditClick(event)}
               >
                 Update
+              </button>
+              <button
+                className="bg-yellow-600 text-white px-2 py-1 rounded"
+                onClick={() => toggleStatus(event)}
+              >
+                {event.status === "active" ? "Cancel" : "Activate"}
               </button>
               <button
                 className="bg-red-600 text-white px-2 py-1 rounded"

@@ -182,7 +182,7 @@ const ManagerOverview = () => {
     queryKey: ["managerOverview", user.email],
     queryFn: async () => {
       const res = await axiosSecure.get("/manager/overview");
-      console.log("Manager Overview API response:", res.data); // server থেকে response
+      // console.log("Manager Overview API response:", res.data); // server থেকে response
       return res.data;
     },
     retry: 1,

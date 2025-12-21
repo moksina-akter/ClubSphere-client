@@ -6,6 +6,7 @@
 // import { useForm } from "react-hook-form";
 // import axios from "axios";
 // import LoadingSpinner from "../../components/Shared/LoadingSpinner";
+// import { imageUpload } from "../utilis";
 
 // const SignUp = () => {
 //   const {
@@ -21,186 +22,72 @@
 
 //   if (!auth || auth.loading) return <LoadingSpinner />;
 
-//   const {
-//     createUser,
-//     user,
-//     updateUserProfile,
-//     signInWithGoogle,
-//     setLoading,
-//     setUser,
-//     loading,
-//   } = auth;
+//   const { createUser, user, signInWithGoogle, setLoading, setUser, loading } =
+//     auth;
 
 //   if (user) return <Navigate to="/" replace />;
 
-//   // const onSubmit = async (data) => {
-//   //   setLoading(true);
-//   //   try {
-//   //     const { name, email, password, image } = data;
-
-//   //     // 1️⃣ Create Firebase user
-//   //     const result = await createUser(email, password);
-//   //     const firebaseUser = result.user;
-
-//   //     // 2️⃣ Upload photo if exists
-//   //     let photoURL = "https://i.ibb.co/4pD1g8k/default-user.png";
-//   //     if (image && image.length > 0) {
-//   //       const formData = new FormData();
-//   //       formData.append("image", image[0]);
-//   //       const res = await axios.post(
-//   //         `https://api.imgbb.com/1/upload?key=${
-//   //           import.meta.env.VITE_IMGBB_KEY
-//   //         }`,
-//   //         formData
-//   //       );
-//   //       photoURL = res.data.data.url;
-//   //     }
-
-//   //     // 3️⃣ Update Firebase profile
-//   //     await updateUserProfile(name, photoURL);
-
-//   //     // 4️⃣ Get fresh token from newly created user
-//   //     const token = await firebaseUser.getIdToken(true);
-
-//   //     // 5️⃣ Save user to MongoDB
-//   //     await axios.post(
-//   //       `${import.meta.env.VITE_LOCALHOST}/users`,
-//   //       {
-//   //         name: firebaseUser.displayName || name,
-//   //         email: firebaseUser.email,
-//   //         photoURL: firebaseUser.photoURL || photoURL,
-//   //         uid: firebaseUser.uid,
-//   //         role: "member",
-//   //         createdAt: new Date(),
-//   //       },
-//   //       {
-//   //         headers: {
-//   //           Authorization: `Bearer ${token}`,
-//   //           "Content-Type": "application/json",
-//   //         },
-//   //       }
-//   //     );
-
-//   //     toast.success("Signup Successful");
-//   //     navigate(from, { replace: true });
-//   //   } catch (err) {
-//   //     console.error("Signup error:", err);
-//   //     toast.error(err.response?.data?.message || err.message);
-//   //   } finally {
-//   //     setLoading(false);
-//   //   }
-//   // };
-
-//   // const handleGoogleSignIn = async () => {
-//   //   setLoading(true);
-//   //   try {
-//   //     const result = await signInWithGoogle();
-//   //     const firebaseUser = result.user;
-
-//   //     const token = await firebaseUser.getIdToken(true);
-
-//   //     await axios.post(
-//   //       `${import.meta.env.VITE_LOCALHOST}/users`,
-//   //       {
-//   //         name: firebaseUser.displayName,
-//   //         email: firebaseUser.email,
-//   //         photoURL: firebaseUser.photoURL,
-//   //         uid: firebaseUser.uid,
-//   //         role: "member",
-//   //         createdAt: new Date(),
-//   //       },
-//   //       {
-//   //         headers: {
-//   //           Authorization: `Bearer ${token}`,
-//   //           "Content-Type": "application/json",
-//   //         },
-//   //       }
-//   //     );
-
-//   //     toast.success("Login Successful");
-//   //     navigate(from, { replace: true });
-//   //   } catch (err) {
-//   //     console.error("Google Sign-In error:", err);
-//   //     toast.error(err.response?.data?.message || err.message);
-//   //   } finally {
-//   //     setLoading(false);
-//   //   }
-//   // };
-
 //   const onSubmit = async (data) => {
-//     setLoading(true);
 //     try {
-//       const { name, email, password, image } = data;
+//       const { name, email, password, role, image } = data;
+//       const imageURL = image
+//         ? await imageUpload(image[0])
+//         : "https://i.ibb.co/4pD1g8k/default-user.png";
 
-//       // Create Firebase user
+//       // Firebase create user
 //       const result = await createUser(email, password);
 
-//       // Upload photo if any
-//       let photoURL = "https://i.ibb.co/4pD1g8k/default-user.png";
-//       if (image && image.length > 0) {
-//         const formData = new FormData();
-//         formData.append("image", image[0]);
-//         const res = await axios.post(
-//           `https://api.imgbb.com/1/upload?key=${
-//             import.meta.env.VITE_IMGBB_KEY
-//           }`,
-//           formData
-//         );
-//         photoURL = res.data.data.url;
-//       }
+//       // Firebase token
+//       const token = await result.user.getIdToken(true);
 
-//       // Update Firebase profile
-//       await updateUserProfile(name, photoURL);
-
-//       // Save to MongoDB (POST only once)
-//       const currentUser = auth.currentUser;
-//       const token = await currentUser.getIdToken();
-
+//       // Save user in backend
 //       await axios.post(
 //         `${import.meta.env.VITE_LOCALHOST}/users`,
 //         {
-//           name: currentUser.displayName,
-//           email: currentUser.email,
-//           photoURL: currentUser.photoURL,
-//           uid: currentUser.uid,
-//           role: "member",
-//           createdAt: new Date(),
+//           name,
+//           email,
+//           role: role || "member",
+//           image: imageURL,
+//           uid: result.user.uid,
 //         },
 //         { headers: { Authorization: `Bearer ${token}` } }
 //       );
 
-//       // update local state to prevent AuthProvider POST
-//       setUser({ ...currentUser, role: "member" });
+//       setUser({ ...result.user, role: role || "member" });
 
 //       toast.success("Signup Successful");
 //       navigate(from, { replace: true });
 //     } catch (err) {
 //       console.log(err);
-//       toast.error(err.message);
-//     } finally {
-//       setLoading(false);
+//       if (err.code === "auth/email-already-in-use") {
+//         toast.error("Email already exists. Please login.");
+//       } else if (err.response?.status === 403) {
+//         toast.error("Forbidden: Cannot create user. Check backend auth.");
+//       } else {
+//         toast.error(err.message || "Something went wrong");
+//       }
 //     }
 //   };
+
 //   const handleGoogleSignIn = async () => {
 //     setLoading(true);
 //     try {
 //       const result = await signInWithGoogle();
 //       const currentUser = result.user;
-//       const token = await currentUser.getIdToken();
-
+//       const token = await currentUser.getIdToken(true);
+//       const saveUser = {
+//         name: currentUser.displayName || "",
+//         email: currentUser.email,
+//         photoURL: currentUser.photoURL || "",
+//         uid: currentUser.uid,
+//         role: "member",
+//         createdAt: new Date(),
+//       };
 //       // POST to MongoDB only if first time login
-//       await axios.post(
-//         `${import.meta.env.VITE_LOCALHOST}/users`,
-//         {
-//           name: currentUser.displayName,
-//           email: currentUser.email,
-//           photoURL: currentUser.photoURL,
-//           uid: currentUser.uid,
-//           role: "member",
-//           createdAt: new Date(),
-//         },
-//         { headers: { Authorization: `Bearer ${token}` } }
-//       );
+
+//       await axios.post(`${import.meta.env.VITE_LOCALHOST}/users`, saveUser, {
+//         headers: { Authorization: `Bearer ${token}` },
+//       });
 
 //       setUser({ ...currentUser, role: "member" });
 
@@ -320,13 +207,12 @@
 // };
 
 // export default SignUp;
-
-import { Link, useLocation, useNavigate, Navigate } from "react-router";
-import { FcGoogle } from "react-icons/fc";
-import useAuth from "../../hooks/useAuth";
-import { toast } from "react-hot-toast";
-import { TbFidgetSpinner } from "react-icons/tb";
+import { Link, useNavigate, useLocation, Navigate } from "react-router";
 import { useForm } from "react-hook-form";
+import { FcGoogle } from "react-icons/fc";
+import { TbFidgetSpinner } from "react-icons/tb";
+import { toast } from "react-hot-toast";
+import useAuth from "../../hooks/useAuth";
 import axios from "axios";
 import LoadingSpinner from "../../components/Shared/LoadingSpinner";
 import { imageUpload } from "../utilis";
@@ -337,98 +223,58 @@ const SignUp = () => {
     handleSubmit,
     formState: { errors },
   } = useForm();
-
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state || "/";
   const auth = useAuth();
-
   if (!auth || auth.loading) return <LoadingSpinner />;
 
   const { createUser, user, signInWithGoogle, setLoading, setUser, loading } =
     auth;
-
   if (user) return <Navigate to="/" replace />;
 
-  // const onSubmit = async (data) => {
-  //   try {
-  //     const { name, email, password, role, image } = data;
-  //     const imageURL = await imageUpload(image[0]);
-
-  //     // Firebase create user
-  //     const result = await createUser(email, password);
-
-  //     // Firebase user object থেকে token
-  //     const token = await result.user.getIdToken(true);
-
-  //     // Save user in backend
-  //     await axios.post(
-  //       `${import.meta.env.VITE_LOCALHOST}/users`,
-  //       {
-  //         name,
-  //         email,
-  //         role,
-  //         image: imageURL,
-  //         uid: result.user.uid,
-  //       },
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       }
-  //     );
-
-  //     toast.success("Signup Successful");
-  //   } catch (err) {
-  //     console.log(err);
-  //     if (err.code === "auth/email-already-in-use") {
-  //       toast.error("Email already exists. Please login.");
-  //     } else if (err.response?.status === 403) {
-  //       toast.error("Forbidden: Cannot create user. Check backend auth.");
-  //     } else {
-  //       toast.error(err.message || "Something went wrong");
-  //     }
-  //   }
-  // };
   const onSubmit = async (data) => {
+    setLoading(true);
     try {
-      const { name, email, password, role, image } = data;
+      const { name, email, password, image } = data;
       const imageURL = image
         ? await imageUpload(image[0])
         : "https://i.ibb.co/4pD1g8k/default-user.png";
 
       // Firebase create user
       const result = await createUser(email, password);
+      const currentUser = result.user;
 
       // Firebase token
-      const token = await result.user.getIdToken(true);
+      const token = await currentUser.getIdToken(true);
 
-      // Save user in backend
+      // Save user securely in backend
       await axios.post(
         `${import.meta.env.VITE_LOCALHOST}/users`,
         {
           name,
           email,
-          role: role || "member",
-          image: imageURL,
-          uid: result.user.uid,
+          photoURL: imageURL,
+          uid: currentUser.uid,
+          role: "member",
+          createdAt: new Date(),
         },
-        { headers: { Authorization: `Bearer ${token}` } }
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
       );
 
-      setUser({ ...result.user, role: role || "member" });
-
+      setUser({ ...currentUser, role: "member" });
       toast.success("Signup Successful");
       navigate(from, { replace: true });
     } catch (err) {
-      console.log(err);
-      if (err.code === "auth/email-already-in-use") {
-        toast.error("Email already exists. Please login.");
-      } else if (err.response?.status === 403) {
-        toast.error("Forbidden: Cannot create user. Check backend auth.");
-      } else {
-        toast.error(err.message || "Something went wrong");
-      }
+      console.error(err);
+      toast.error(err.response?.data?.message || err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -437,7 +283,9 @@ const SignUp = () => {
     try {
       const result = await signInWithGoogle();
       const currentUser = result.user;
+
       const token = await currentUser.getIdToken(true);
+
       const saveUser = {
         name: currentUser.displayName || "",
         email: currentUser.email,
@@ -446,19 +294,20 @@ const SignUp = () => {
         role: "member",
         createdAt: new Date(),
       };
-      // POST to MongoDB only if first time login
 
       await axios.post(`${import.meta.env.VITE_LOCALHOST}/users`, saveUser, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
       });
 
       setUser({ ...currentUser, role: "member" });
-
       toast.success("Login Successful");
       navigate(from, { replace: true });
     } catch (err) {
-      console.log(err);
-      toast.error(err.message);
+      console.error(err);
+      toast.error(err.response?.data?.message || err.message);
     } finally {
       setLoading(false);
     }
@@ -466,80 +315,64 @@ const SignUp = () => {
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-white">
-      <div className="flex flex-col max-2xl-md p-6 rounded-md sm:p-10 bg-gray-100 text-gray-900">
-        <div className="text-center">
-          <h1 className="my-3 text-4xl font-bold">Sign Up</h1>
+      <div className="flex flex-col max-w-md p-6 rounded-md sm:p-10 bg-gray-100 text-gray-900">
+        <div className="text-center mb-6">
+          <h1 className="text-4xl font-bold">Sign Up</h1>
           <p className="text-sm text-gray-400">Welcome to ClubSphere</p>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          <div className="space-y-4">
-            {/* NAME */}
-            <div>
-              <label className="block mb-2 text-sm">Name</label>
-              <input
-                {...register("name", { required: "Name is required" })}
-                type="text"
-                className="w-full px-3 py-2 border rounded-md bg-gray-200"
-                placeholder="Enter your name"
-              />
-              {errors.name && (
-                <p className="text-red-500 text-xs">{errors.name.message}</p>
-              )}
-            </div>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <div>
+            <label className="block mb-2 text-sm">Name</label>
+            <input
+              {...register("name", { required: true })}
+              type="text"
+              className="w-full px-3 py-2 border rounded-md bg-gray-200"
+            />
+            {errors.name && (
+              <p className="text-red-500 text-xs">Name is required</p>
+            )}
+          </div>
 
-            {/* IMAGE */}
-            <div>
-              <label className="block mb-2 text-sm">Profile Image</label>
-              <input
-                type="file"
-                accept="image/*"
-                {...register("image")}
-                className="file-input bg-gray-100"
-              />
-            </div>
+          <div>
+            <label className="block mb-2 text-sm">Profile Image</label>
+            <input
+              type="file"
+              accept="image/*"
+              {...register("image")}
+              className="file-input bg-gray-100"
+            />
+          </div>
 
-            {/* EMAIL */}
-            <div>
-              <label className="block mb-2 text-sm">Email</label>
-              <input
-                {...register("email", { required: "Email is required" })}
-                type="email"
-                className="w-full px-3 py-2 border rounded-md bg-gray-200"
-                placeholder="Enter your email"
-              />
-              {errors.email && (
-                <p className="text-red-500 text-xs">{errors.email.message}</p>
-              )}
-            </div>
+          <div>
+            <label className="block mb-2 text-sm">Email</label>
+            <input
+              {...register("email", { required: true })}
+              type="email"
+              className="w-full px-3 py-2 border rounded-md bg-gray-200"
+            />
+            {errors.email && (
+              <p className="text-red-500 text-xs">Email is required</p>
+            )}
+          </div>
 
-            {/* PASSWORD */}
-            <div>
-              <label className="block mb-2 text-sm">Password</label>
-              <input
-                {...register("password", {
-                  required: "Password is required",
-                  pattern: {
-                    value: /^(?=.*[a-z])(?=.*[A-Z]).{6,}$/,
-                    message:
-                      "Password must contain 1 uppercase, 1 lowercase & at least 6 chars",
-                  },
-                })}
-                type="password"
-                className="w-full px-3 py-2 border rounded-md bg-gray-200"
-                placeholder="*******"
-              />
-              {errors.password && (
-                <p className="text-red-500 text-xs">
-                  {errors.password.message}
-                </p>
-              )}
-            </div>
+          <div>
+            <label className="block mb-2 text-sm">Password</label>
+            <input
+              {...register("password", { required: true, minLength: 6 })}
+              type="password"
+              className="w-full px-3 py-2 border rounded-md bg-gray-200"
+            />
+            {errors.password && (
+              <p className="text-red-500 text-xs">
+                Password must be at least 6 chars
+              </p>
+            )}
           </div>
 
           <button
             type="submit"
-            className="bg-blue-600 hover:bg-blue-700 w-full rounded-md py-3 text-white"
+            className="bg-blue-600 w-full py-3 text-white rounded-md"
           >
             {loading ? (
               <TbFidgetSpinner className="animate-spin m-auto" />
@@ -549,7 +382,6 @@ const SignUp = () => {
           </button>
         </form>
 
-        {/* GOOGLE */}
         <div
           onClick={handleGoogleSignIn}
           className="flex justify-center items-center mt-4 space-x-2 border p-2 rounded-md cursor-pointer"
@@ -558,7 +390,7 @@ const SignUp = () => {
           <p>Continue with Google</p>
         </div>
 
-        <p className="px-6 text-sm text-center mt-3 text-gray-400">
+        <p className="text-center text-sm mt-3 text-gray-400">
           Already have an account?{" "}
           <Link to="/login" className="text-blue-600">
             Login

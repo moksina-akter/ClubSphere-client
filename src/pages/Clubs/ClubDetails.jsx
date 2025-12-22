@@ -3,10 +3,16 @@ import { useParams } from "react-router";
 import axios from "axios";
 import LoadingSpinner from "../../components/Shared/LoadingSpinner";
 import JoinClub from "./JoinClub";
+import Container from "../../components/Shared/Container";
+import {
+  HiOutlineBadgeCheck,
+  HiOutlineCollection,
+  HiOutlineCurrencyDollar,
+} from "react-icons/hi";
 
 const ClubDetails = () => {
   const { id } = useParams();
-  // console.log(id);
+
   const {
     data: club,
     isLoading,
@@ -17,7 +23,6 @@ const ClubDetails = () => {
       const res = await axios.get(
         `${import.meta.env.VITE_LOCALHOST}/club/${id}`
       );
-      // console.log(club);
       return res.data;
     },
   });
@@ -25,35 +30,78 @@ const ClubDetails = () => {
   if (isLoading) return <LoadingSpinner />;
   if (isError)
     return (
-      <p className="text-red-500 text-center mt-10">
+      <p className="text-red-500 text-center mt-10 font-bold">
         Failed to load club details.
       </p>
     );
 
   return (
-    <div className="container mx-auto px-4 py-10">
-      <div className="max-w-4xl mx-auto bg-white shadow-md rounded-lg overflow-hidden">
-        <img
-          src={club.bannerImage || "/placeholder.jpg"}
-          alt={club.clubName}
-          className="w-full h-64 object-cover"
-        />
+    <Container>
+      <div className="max-w-2xl mx-auto my-16 px-4">
+        {/* Single Professional Card */}
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-xl p-8 md:p-10">
+          {/* Title & Category Badge */}
+          <div className="mb-6 text-center">
+            <span className="bg-blue-50 text-blue-600 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest mb-3 inline-block">
+              {club.category}
+            </span>
+            <h1 className="text-3xl font-extrabold text-gray-900">
+              {club.clubName}
+            </h1>
+          </div>
 
-        <div className="p-6">
-          <h1 className="text-3xl font-bold mb-4">{club.clubName}</h1>
-          <p className="text-gray-600 mb-2">{club.category}</p>
-          <p className="text-gray-700 mb-4">{club.description}</p>
+          {/* Info Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+            <div className="flex items-center gap-3 bg-gray-50 p-4 rounded-xl border border-gray-100">
+              <HiOutlineCollection className="text-blue-500 text-2xl" />
+              <div>
+                <p className="text-[10px] text-gray-400 uppercase font-bold">
+                  Category
+                </p>
+                <p className="text-sm font-semibold text-gray-700">
+                  {club.category}
+                </p>
+              </div>
+            </div>
 
-          <p className="mb-4 font-medium">
-            Membership Fee:{" "}
-            {club.membershipFee > 0 ? `$${club.membershipFee}` : "Free"}
-          </p>
+            <div className="flex items-center gap-3 bg-gray-50 p-4 rounded-xl border border-gray-100">
+              <HiOutlineCurrencyDollar className="text-green-500 text-2xl" />
+              <div>
+                <p className="text-[10px] text-gray-400 uppercase font-bold">
+                  Membership Fee
+                </p>
+                <p className="text-sm font-bold text-gray-900">
+                  {club.membershipFee > 0 ? `$${club.membershipFee}` : "FREE"}
+                </p>
+              </div>
+            </div>
+          </div>
 
-          {/* Join Button Component */}
-          <JoinClub club={club} />
+          {/* Description Section */}
+          <div className="mb-8">
+            <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-3 border-b pb-2">
+              Club Description
+            </h3>
+            <p className="text-gray-700 leading-relaxed text-base whitespace-pre-line">
+              {club.description}
+            </p>
+          </div>
+
+          {/* Join Action Section */}
+          <div className="pt-6 border-t border-gray-50 text-center">
+            <div className="mb-4 flex items-center justify-center gap-2 text-sm text-gray-500 font-medium">
+              <HiOutlineBadgeCheck className="text-blue-500 text-lg" />
+              Official Verified Club
+            </div>
+
+            {/* Join Button Component */}
+            <div className="w-full">
+              <JoinClub club={club} />
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </Container>
   );
 };
 

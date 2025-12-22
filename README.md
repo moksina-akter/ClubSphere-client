@@ -18,7 +18,7 @@ ClubSphere is a full-stack MERN web application designed to help people discover
 
 ## Admin Account (For Testing)
 
-- **Email:** admin@example.com
+- **Email:** Hiya@gmail.com
 - **Password:** Admin@123
 
 ---

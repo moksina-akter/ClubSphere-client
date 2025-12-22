@@ -14,7 +14,7 @@ const Navbar = () => {
     return <LoadingSpinner></LoadingSpinner>;
   }
   return (
-    <div className="fixed w-full bg-gradient-to-b from-blue-50 to-blue-100 z-50 shadow-sm">
+    <div className="fixed w-full bg-gradient-to-b from-blue-200 to-blue-300 z-50 shadow-sm">
       <Container>
         <div className="flex justify-between items-center py-4">
           {/* Logo */}
@@ -98,6 +98,13 @@ const Navbar = () => {
                       >
                         Logout
                       </div>
+                      <Link
+                        to="/dashboard/profile"
+                        className="block px-4 py-2 hover:bg-neutral-100 transition font-medium"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        Profile
+                      </Link>
                     </>
                   ) : (
                     <>

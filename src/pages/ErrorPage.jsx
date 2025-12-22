@@ -1,4 +1,3 @@
-// import Button from "../components/Shared/Button/Button";
 import { useNavigate } from "react-router";
 
 const ErrorPage = () => {

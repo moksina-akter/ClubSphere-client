@@ -11,9 +11,6 @@ const ManagerClubs = () => {
 
   const { register, handleSubmit, reset } = useForm();
 
-  // =======================
-  // GET: Manager Clubs
-  // =======================
   const { data: clubs = [], isLoading } = useQuery({
     queryKey: ["managerClubs"],
     enabled: !!firebaseUser,
@@ -27,9 +24,6 @@ const ManagerClubs = () => {
     },
   });
 
-  // =======================
-  // CREATE Club
-  // =======================
   const createClubMutation = useMutation({
     mutationFn: async (data) => {
       const token = await firebaseUser.getIdToken();
@@ -48,9 +42,6 @@ const ManagerClubs = () => {
     },
   });
 
-  // =======================
-  // UPDATE Club
-  // =======================
   const updateClubMutation = useMutation({
     mutationFn: async ({ clubId, data }) => {
       const token = await firebaseUser.getIdToken();
@@ -70,9 +61,6 @@ const ManagerClubs = () => {
     },
   });
 
-  // =======================
-  // DELETE Club
-  // =======================
   const deleteClubMutation = useMutation({
     mutationFn: async (clubId) => {
       const token = await firebaseUser.getIdToken();
@@ -89,9 +77,6 @@ const ManagerClubs = () => {
     },
   });
 
-  // =======================
-  // FORM SUBMIT
-  // =======================
   const onSubmit = (data) => {
     if (editingClubId) {
       updateClubMutation.mutate({ clubId: editingClubId, data });
@@ -106,9 +91,6 @@ const ManagerClubs = () => {
     <div className="p-6">
       <h1 className="text-3xl font-bold mb-6">My Clubs</h1>
 
-      {/* =======================
-          CREATE / EDIT FORM
-         ======================= */}
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="bg-white p-6 rounded shadow mb-8"
@@ -183,9 +165,6 @@ const ManagerClubs = () => {
         </div>
       </form>
 
-      {/* =======================
-          CLUB CARDS
-         ======================= */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {clubs.map((club) => (
           <div

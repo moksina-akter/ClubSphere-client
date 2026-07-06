@@ -19,7 +19,7 @@ const JoinClub = ({ club }) => {
       const res = await axios.post(
         `${import.meta.env.VITE_LOCALHOST}/member/join`,
         { clubId: club._id },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` } },
       );
 
       return res.data;
@@ -46,14 +46,14 @@ const JoinClub = ({ club }) => {
       className={`px-6 py-3 rounded-lg text-white font-medium ${
         club.membershipFee > 0
           ? "bg-green-600 hover:bg-green-700"
-          : "bg-blue-600 hover:bg-blue-700"
+          : "bg-[#FF6A1C] hover:bg-[rgb(220,84,11)]"
       } ${joinMutation.isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
     >
       {joinMutation.isLoading
         ? "Processing..."
         : club.membershipFee > 0
-        ? `Pay $${club.membershipFee} & Join`
-        : "Join Free"}
+          ? `Pay $${club.membershipFee} & Join`
+          : "Join Free"}
     </button>
   );
 };

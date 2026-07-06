@@ -70,7 +70,7 @@ const EventsManagement = () => {
     mutationFn: async ({ id, updatedData }) => {
       const res = await axiosSecure.put(
         `/manager/my-events/${id}`,
-        updatedData
+        updatedData,
       );
       return res.data;
     },
@@ -257,7 +257,7 @@ const EventsManagement = () => {
 
         <div className="flex gap-2">
           <button
-            className="bg-blue-600 text-white px-4 py-2 rounded"
+            className="bg-[#FF6A1C] text-white px-4 py-2 rounded"
             onClick={handleCreateOrUpdate}
           >
             {editingEvent ? "Save Changes" : "Create Event"}

@@ -67,7 +67,7 @@ const Profile = () => {
           {/* Edit Profile Button */}
           <button
             onClick={() => setModalOpen(true)}
-            className="mt-4 px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow transition"
+            className="mt-4 px-6 py-2 bg-blue-500 hover:bg-[#FF6A1C] text-white rounded-lg shadow transition"
           >
             Edit Profile
           </button>
@@ -128,7 +128,7 @@ const Profile = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow transition"
+                  className="px-4 py-2 bg-blue-500 hover:bg-[#FF6A1C] text-white rounded-lg shadow transition"
                 >
                   {loading ? "Updating..." : "Update"}
                 </button>

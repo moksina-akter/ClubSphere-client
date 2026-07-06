@@ -35,7 +35,7 @@ const EventRegistrations = () => {
         `/manager/event-registrations/${registrationId}`,
         {
           status,
-        }
+        },
       );
       return res.data;
     },
@@ -78,7 +78,7 @@ const EventRegistrations = () => {
 
       {registrations.length === 0 ? (
         <div className="bg-blue-50 p-6 rounded-lg text-center">
-          <p className="text-blue-600 font-medium text-lg">
+          <p className="text-[#FF6A1C] font-medium text-lg">
             No registrations found for this manager.
           </p>
         </div>
@@ -116,8 +116,8 @@ const EventRegistrations = () => {
                         reg.status === "attended"
                           ? "bg-green-100 text-green-700"
                           : reg.status === "cancelled"
-                          ? "bg-red-100 text-red-700"
-                          : "bg-yellow-100 text-yellow-700"
+                            ? "bg-red-100 text-red-700"
+                            : "bg-yellow-100 text-yellow-700"
                       }`}
                     >
                       {reg.status}

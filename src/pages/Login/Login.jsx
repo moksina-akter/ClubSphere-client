@@ -108,7 +108,7 @@ const Login = () => {
           <button
             type="submit"
             disabled={loading}
-            className="bg-blue-600 hover:bg-blue-700 w-full rounded-md py-3 text-white font-medium flex justify-center items-center"
+            className="bg-[#FF6A1C] hover:bg-[rgb(220,84,11)] w-full rounded-md py-3 text-white font-medium flex justify-center items-center"
           >
             {loading ? (
               <TbFidgetSpinner className="animate-spin text-xl" />
@@ -132,7 +132,7 @@ const Login = () => {
           Don’t have an account?{" "}
           <Link
             to="/register"
-            className="text-blue-600 hover:underline font-semibold"
+            className="text-[#FF6A1C] hover:underline font-semibold"
           >
             Register
           </Link>

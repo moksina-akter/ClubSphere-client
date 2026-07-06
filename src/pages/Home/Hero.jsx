@@ -32,7 +32,7 @@ const Hero = () => {
         <div className="mt-6 flex flex-wrap justify-center gap-4">
           <Link
             to="/club"
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold shadow-lg transition"
+            className="bg-[#FF6A1C] hover:bg-[rgb(220,84,11)] text-white px-6 py-3 rounded-lg font-semibold shadow-lg transition"
           >
             Explore Clubs
           </Link>

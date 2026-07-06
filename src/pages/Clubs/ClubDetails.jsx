@@ -21,7 +21,7 @@ const ClubDetails = () => {
     queryKey: ["club", id],
     queryFn: async () => {
       const res = await axios.get(
-        `${import.meta.env.VITE_LOCALHOST}/club/${id}`
+        `${import.meta.env.VITE_LOCALHOST}/club/${id}`,
       );
       return res.data;
     },
@@ -42,7 +42,7 @@ const ClubDetails = () => {
         <div className="bg-white rounded-2xl border border-gray-100 shadow-xl p-8 md:p-10">
           {/* Title & Category Badge */}
           <div className="mb-6 text-center">
-            <span className="bg-blue-50 text-blue-600 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest mb-3 inline-block">
+            <span className="bg-blue-50 text-[#FF6A1C] text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest mb-3 inline-block">
               {club.category}
             </span>
             <h1 className="text-3xl font-extrabold text-gray-900">

@@ -56,7 +56,7 @@ const EventDetails = () => {
           queryClient.invalidateQueries(["event", id]);
         })
         .catch((err) =>
-          toast.error(err.response?.data?.message || "Verification failed")
+          toast.error(err.response?.data?.message || "Verification failed"),
         );
     }
   }, [searchParams, firebaseUser, axiosSecure, queryClient, id]);
@@ -101,7 +101,7 @@ const EventDetails = () => {
         <div className="bg-white rounded-2xl border border-gray-100 shadow-xl p-8">
           {/* Badge & Title */}
           <div className="flex items-center gap-2 mb-4">
-            <span className="bg-blue-50 text-blue-600 text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider">
+            <span className="bg-blue-50 text-[#FF6A1C] text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider">
               {event.category || "General Event"}
             </span>
           </div>
@@ -148,7 +148,7 @@ const EventDetails = () => {
           {/* Action Button */}
           <button
             onClick={handleRegister}
-            className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all shadow-md active:scale-95"
+            className="w-full py-4 bg-[#FF6A1C] hover:bg-[rgb(220,84,11)] text-white font-bold rounded-xl transition-all shadow-md active:scale-95"
           >
             {feeAmount > 0 ? `Pay ৳${feeAmount} & Join` : "Join Event Now"}
           </button>

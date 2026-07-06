@@ -75,7 +75,7 @@ export default function WhyJoinUnique() {
             className="text-3xl md:text-4xl font-bold text-center mb-16"
           >
             Why You Should{" "}
-            <span className="text-blue-700">Join a ClubSphere Club?</span>
+            <span className="text-[#FF6A1C]">Join a ClubSphere Club?</span>
           </motion.h2>
 
           {/* Benefits Grid */}

@@ -19,13 +19,13 @@ const Footer = () => {
         {/* Links */}
         <div className="flex flex-col gap-2">
           <h3 className="font-semibold">Quick Links</h3>
-          <Link to="/" className="hover:text-blue-600 transition">
+          <Link to="/" className="hover:text-[#FF6A1C] transition">
             Home
           </Link>
-          <Link to="/club" className="hover:text-blue-600 transition">
+          <Link to="/club" className="hover:text-[#FF6A1C] transition">
             Clubs
           </Link>
-          <Link to="/events" className="hover:text-blue-600 transition">
+          <Link to="/events" className="hover:text-[#FF6A1C] transition">
             Events
           </Link>
         </div>
@@ -38,7 +38,7 @@ const Footer = () => {
               <FaGithub className="w-5 h-5 hover:text-black transition" />
             </a>
             <a href="https://linkedin.com/" target="_blank" rel="noreferrer">
-              <FaLinkedin className="w-5 h-5 hover:text-blue-700 transition" />
+              <FaLinkedin className="w-5 h-5 hover:text-[rgb(220,84,11)] transition" />
             </a>
             <a href="https://x.com/" target="_blank" rel="noreferrer">
               {/* <FaX className="w-5 h-5 hover:text-blue-400 transition" /> */}

@@ -6,7 +6,7 @@ import { Link } from "react-router";
 
 const fetchFeaturedClubs = async () => {
   const { data } = await axios.get(
-    `${import.meta.env.VITE_LOCALHOST}/featured-clubs`
+    `${import.meta.env.VITE_LOCALHOST}/featured-clubs`,
   );
   return data;
 };
@@ -19,7 +19,7 @@ const FeaturedClubs = () => {
 
   if (isLoading) {
     return (
-      <div className="text-center py-10 text-blue-600">
+      <div className="text-center py-10 text-[#FF6A1C]">
         Loading Featured Clubs...
       </div>
     );
@@ -29,7 +29,7 @@ const FeaturedClubs = () => {
     <div className="px-5 py-16">
       <Container>
         <motion.h2
-          className="text-3xl md:text-4xl font-bold text-center text-blue-700 mb-10"
+          className="text-3xl md:text-4xl font-bold text-center text-[#FF6A1C] mb-10"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
         >
@@ -58,7 +58,7 @@ const FeaturedClubs = () => {
                 <p className="text-sm text-gray-500">{club.location}</p>
                 <Link
                   to={`/club/${club._id}`}
-                  className="mt-4 inline-block w-full text-center py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                  className="mt-4 inline-block w-full text-center py-2 bg-[#FF6A1C] text-white rounded-lg hover:bg-[rgb(220,84,11)] transition"
                 >
                   View Details
                 </Link>

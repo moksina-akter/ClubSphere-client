@@ -56,7 +56,7 @@ const SignUp = () => {
 
       await axiosSecure.post(
         `${import.meta.env.VITE_LOCALHOST}/users`,
-        saveUser
+        saveUser,
       );
 
       setUser({
@@ -91,7 +91,7 @@ const SignUp = () => {
 
       await axiosSecure.post(
         `${import.meta.env.VITE_LOCALHOST}/users`,
-        saveUser
+        saveUser,
       );
 
       toast.success("Login Successful!");
@@ -110,7 +110,7 @@ const SignUp = () => {
     <div className="flex justify-center items-center min-h-screen bg-white">
       <div className="flex flex-col max-w-md w-full p-6 rounded-md sm:p-10 bg-gray-100 text-gray-900 shadow-lg">
         <div className="text-center mb-6">
-          <h1 className="text-4xl font-bold text-blue-600">Sign Up</h1>
+          <h1 className="text-4xl font-bold text-[#FF6A1C]">Sign Up</h1>
           <p className="text-sm text-gray-500">
             Create your ClubSphere account
           </p>
@@ -189,7 +189,7 @@ const SignUp = () => {
           <button
             type="submit"
             disabled={loading}
-            className="bg-blue-600 hover:bg-blue-700 w-full py-3 text-white rounded-md font-bold transition duration-200 flex justify-center items-center"
+            className="bg-[#FF6A1C] hover:bg-[rgb(220,84,11)] w-full py-3 text-white rounded-md font-bold transition duration-200 flex justify-center items-center"
           >
             {loading ? (
               <TbFidgetSpinner className="animate-spin text-xl" />
@@ -213,7 +213,10 @@ const SignUp = () => {
 
         <p className="text-center text-sm mt-6 text-gray-500">
           Already have an account?{" "}
-          <Link to="/login" className="text-blue-600 font-bold hover:underline">
+          <Link
+            to="/login"
+            className="text-[#FF6A1C] font-bold hover:underline"
+          >
             Login
           </Link>
         </p>

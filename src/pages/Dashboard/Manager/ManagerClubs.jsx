@@ -18,7 +18,7 @@ const ManagerClubs = () => {
       const token = await firebaseUser.getIdToken();
       const res = await axios.get(
         `${import.meta.env.VITE_LOCALHOST}/manager/my-clubs`,
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` } },
       );
       return res.data;
     },
@@ -30,7 +30,7 @@ const ManagerClubs = () => {
       const res = await axios.post(
         `${import.meta.env.VITE_LOCALHOST}/manager/create-club`,
         data,
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` } },
       );
       return res.data;
     },
@@ -48,7 +48,7 @@ const ManagerClubs = () => {
       const res = await axios.put(
         `${import.meta.env.VITE_LOCALHOST}/manager/my-clubs/${clubId}`,
         data,
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` } },
       );
       return res.data;
     },
@@ -66,7 +66,7 @@ const ManagerClubs = () => {
       const token = await firebaseUser.getIdToken();
       const res = await axios.delete(
         `${import.meta.env.VITE_LOCALHOST}/manager/my-clubs/${clubId}`,
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` } },
       );
       return res.data;
     },
@@ -145,7 +145,7 @@ const ManagerClubs = () => {
         <div className="mt-4">
           <button
             type="submit"
-            className="bg-blue-600 text-white px-4 py-2 rounded"
+            className="bg-[#FF6A1C] text-white px-4 py-2 rounded"
           >
             {editingClubId ? "Update Club" : "Create Club"}
           </button>
@@ -193,8 +193,8 @@ const ManagerClubs = () => {
                   club.status === "approved"
                     ? "text-green-600"
                     : club.status === "pending"
-                    ? "text-yellow-600"
-                    : "text-red-600"
+                      ? "text-yellow-600"
+                      : "text-red-600"
                 }`}
               >
                 Status: {club.status}

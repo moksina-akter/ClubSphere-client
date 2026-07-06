@@ -12,14 +12,12 @@ ClubSphere is a full-stack MERN web application designed to help people discover
 
 ## Live Site
 
-[Insert your live site link here]
-
----
+https://club-sphere-client-khaki.vercel.app/
 
 ## Admin Account (For Testing)
 
-- **Email:** Hiya@gmail.com
-- **Password:** Admin@123
+- **Email:** hiya@gmail.com
+- **Password:** Hiya@12
 
 ---
 

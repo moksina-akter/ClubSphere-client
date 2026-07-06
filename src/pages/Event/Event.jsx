@@ -21,7 +21,7 @@ export default function Event() {
         `${import.meta.env.VITE_LOCALHOST}/events`,
         {
           params: { search, category },
-        }
+        },
       );
       return data;
     },
@@ -35,7 +35,7 @@ export default function Event() {
 
   return (
     <Container>
-      <h1 className="text-3xl font-bold p-5 mt-5 text-blue-700 text-center">
+      <h1 className="text-3xl font-bold p-5 mt-5 text-[#FF6A1C] text-center">
         All Events
       </h1>
 
@@ -89,7 +89,7 @@ export default function Event() {
                   {event.title}
                 </h2>
                 <div className="flex justify-between items-center mb-3">
-                  <span className="text-xs font-semibold bg-blue-100 text-blue-600 px-2 py-1 rounded-full uppercase">
+                  <span className="text-xs font-semibold bg-blue-100 text-[#FF6A1C] px-2 py-1 rounded-full uppercase">
                     {event.category || "General"}
                   </span>
                   <p className="text-xs text-gray-400">
@@ -101,7 +101,7 @@ export default function Event() {
                 </p>
                 <div className="space-y-1">
                   <p className="text-sm font-medium text-gray-700 italic">
-                    Club: <span className="text-blue-600">{event.clubId}</span>
+                    Club: <span className="text-[#FF6A1C]">{event.clubId}</span>
                   </p>
                   <p className="text-lg font-bold text-green-600">
                     {event.eventFee > 0 ? `৳${event.eventFee}` : "Free"}
@@ -111,7 +111,7 @@ export default function Event() {
 
               <Link
                 to={`/events/${event._id}`}
-                className="mt-5 block text-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition"
+                className="mt-5 block text-center bg-[#FF6A1C] hover:bg-[rgb(220,84,11)] text-white font-semibold py-2 rounded-lg transition"
               >
                 View Details
               </Link>

@@ -33,7 +33,7 @@ const Clubs = () => {
   return (
     <Container>
       <div className="container mx-auto px-4 py-10">
-        <h1 className="text-3xl font-bold mb-8 text-blue-700 text-center">
+        <h1 className="text-3xl font-bold mb-8 text-[#FF6A1C] text-center">
           All Clubs
         </h1>
 
@@ -102,21 +102,21 @@ const Clubs = () => {
                   <h2 className="text-xl font-semibold mb-2">
                     {club.clubName}
                   </h2>
-                  <span className="bg-blue-100 text-blue-700 text-xs font-bold px-2 py-1 rounded w-fit mb-2">
+                  <span className="bg-blue-100 text-[rgb(220,84,11)] text-xs font-bold px-2 py-1 rounded w-fit mb-2">
                     {club.category}
                   </span>
                   <p className="text-gray-700 mb-4 line-clamp-3 flex-grow">
                     {club.description}
                   </p>
                   <div className="flex justify-between items-center mt-auto">
-                    <p className="font-bold text-lg text-blue-600">
+                    <p className="font-bold text-lg text-[#FF6A1C]">
                       {club.membershipFee > 0
                         ? `$${club.membershipFee}`
                         : "Free"}
                     </p>
                     <Link
                       to={`/club/${club._id}`}
-                      className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition shadow-sm"
+                      className="bg-[#FF6A1C] text-white px-4 py-2 rounded-lg hover:bg-[rgb(220,84,11)] transition shadow-sm"
                     >
                       View Details
                     </Link>

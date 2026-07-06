@@ -28,6 +28,7 @@ import EventsManagement from "../pages/Dashboard/Manager/EventsManagement";
 import EventRegistrations from "../pages/Dashboard/Manager/EventRegistrations";
 import ManagerClubs from "../pages/Dashboard/Manager/ManagerClubs";
 import EventPaymentSuccess from "../pages/Event/EventPaymentSuccess";
+import AboutUs from "../pages/About/AboutUs";
 
 export const router = createBrowserRouter([
   {
@@ -58,6 +59,10 @@ export const router = createBrowserRouter([
       {
         path: "event-payment-success",
         element: <EventPaymentSuccess />,
+      },
+      {
+        path: "/about",
+        element: <AboutUs />,
       },
     ],
   },

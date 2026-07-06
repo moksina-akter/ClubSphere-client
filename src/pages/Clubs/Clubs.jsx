@@ -87,7 +87,7 @@ const Clubs = () => {
             </p>
           </div>
         ) : (
-          <div className="grid md:grid-cols-3 sm:grid-cols-2 gap-6">
+          <div className="grid md:grid-cols-4 sm:grid-cols-2 gap-6">
             {clubs.map((club) => (
               <div
                 key={club._id}

@@ -29,7 +29,7 @@ const FeaturedClubs = () => {
     <div className="px-5 py-16">
       <Container>
         <motion.h2
-          className="text-3xl md:text-4xl font-bold text-center text-[#FF6A1C] mb-10"
+          className="text-sm md:text-4xl font-bold text-center text-[#FF6A1C] mb-10"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
         >

@@ -113,10 +113,7 @@ const Blog = () => {
           >
             Insights & <span className="text-[#FF6A1C]">Community Stories</span>
           </motion.h1>
-          <p className="text-slate-500 text-sm max-w-xl mx-auto mt-3">
-            Explore tips, guides, and success stories on how to successfully
-            run, market, and expand local groups.
-          </p>
+
           <p className="text-slate-500 text-sm max-w-xl mx-auto mt-3">
             Explore tips, guides, and success stories on how to successfully
             run, market, and expand local groups.
@@ -155,7 +152,7 @@ const Blog = () => {
       </div>
 
       {/* ৩. ব্লগ গ্রিড লিস্ট */}
-      <div className="max-w-6xl mx-auto px-4 mt-8">
+      <div className="max-w-7xl mx-auto px-4 mt-8">
         {filteredBlogs.length > 0 ? (
           <motion.div
             variants={containerVariants}

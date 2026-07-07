@@ -30,6 +30,7 @@ import ManagerClubs from "../pages/Dashboard/Manager/ManagerClubs";
 import EventPaymentSuccess from "../pages/Event/EventPaymentSuccess";
 import AboutUs from "../pages/About/AboutUs";
 import Blog from "../pages/Blog/Blog";
+import Contact from "../pages/Contact/Contact";
 
 export const router = createBrowserRouter([
   {
@@ -68,6 +69,10 @@ export const router = createBrowserRouter([
       {
         path: "/blog",
         element: <Blog />,
+      },
+      {
+        path: "/contact",
+        element: <Contact />,
       },
     ],
   },

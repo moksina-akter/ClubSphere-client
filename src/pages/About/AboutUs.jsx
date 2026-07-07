@@ -213,13 +213,13 @@ const AboutUs = () => {
 
             <div className="flex justify-center gap-4 mt-4 text-slate-500 text-sm">
               <a
-                href="#"
-                className="hover:text-[rgb(220,84,11)] font-medium transition"
+                href="https://github.com/"
+                className="hover:text-[rgb(220,84,11)] font-medium transition" //github.com/" //github.com/" //github.com/""
               >
                 GitHub
               </a>
               <a
-                href="#"
+                href="https://linkedin.com/"
                 className="hover:text-[rgb(220,84,11)] font-medium transition"
               >
                 LinkedIn

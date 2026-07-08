@@ -1,4 +1,5 @@
 import ClubManagers from "./ClubManagers";
+import FAQWithNewsletter from "./FAQWithNewsletter";
 import FeaturedClubs from "./FeaturedClubs";
 import Gallery from "./Gallery";
 import Hero from "./Hero";
@@ -22,6 +23,7 @@ const Home = () => {
       <Gallery />
       <Pricing />
       <Testimonials />
+      <FAQWithNewsletter />
     </div>
   );
 };

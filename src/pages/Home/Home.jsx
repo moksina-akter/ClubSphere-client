@@ -1,5 +1,6 @@
 import ClubManagers from "./ClubManagers";
 import FeaturedClubs from "./FeaturedClubs";
+import Gallery from "./Gallery";
 import Hero from "./Hero";
 import HowItWorks from "./HowItWorks";
 import Statistics from "./Statistics";
@@ -16,6 +17,7 @@ const Home = () => {
       <HowItWorks />
       <WhyJoin />
       <ClubManagers />
+      <Gallery />
     </div>
   );
 };

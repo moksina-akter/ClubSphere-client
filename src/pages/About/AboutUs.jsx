@@ -42,7 +42,7 @@ const AboutUs = () => {
   };
 
   return (
-    <div className="pt-20 bg-slate-50 min-h-screen overflow-hidden">
+    <div className="pt-20 bg-gradient-to-b from-blue-50 to-blue-100 min-h-screen overflow-hidden">
       {/* ১. Hero Section (Fade-in with scale motion) */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -88,7 +88,7 @@ const AboutUs = () => {
         variants={fadeInUp}
         className="max-w-6xl mx-auto px-4 py-16 grid grid-cols-1 md:grid-cols-2 gap-8"
       >
-        <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between hover:shadow-md transition">
+        <div className="bg-white p-8 rounded-2xl shadow-sm border hover:border-[#FF6A1C] border-slate-100 flex flex-col justify-between hover:shadow-md transition">
           <div>
             <div className="p-3 bg-orange-50 w-fit rounded-xl mb-4">
               <FiTarget className="text-2xl text-[rgb(220,84,11)]" />
@@ -104,7 +104,7 @@ const AboutUs = () => {
           </div>
         </div>
 
-        <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between hover:shadow-md transition">
+        <div className="bg-white p-8 rounded-2xl hover:border-[#FF6A1C] shadow-sm border border-slate-100 flex flex-col justify-between hover:shadow-md transition">
           <div>
             <div className="p-3 bg-orange-50 w-fit rounded-xl mb-4">
               <FiTrendingUp className="text-2xl text-[rgb(220,84,11)]" />
@@ -162,7 +162,7 @@ const AboutUs = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: idx * 0.15 }}
-              className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm text-center hover:shadow-md transition"
+              className="bg-white p-6 rounded-2xl border border-slate-100 hover:shadow-[#FF6A1C] shadow-sm text-center hover:shadow-md transition"
             >
               <div className="mx-auto w-fit p-4 bg-orange-50 rounded-full mb-4">
                 {value.icon}

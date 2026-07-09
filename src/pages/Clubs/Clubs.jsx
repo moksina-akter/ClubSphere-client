@@ -174,7 +174,7 @@ import axios from "axios";
 import LoadingSpinner from "../../components/Shared/LoadingSpinner";
 import Container from "../../components/Shared/Container";
 import { useState } from "react";
-import { HiOutlineLocationMarker } from "react-icons/hi"; // 📍 লোকেশন আইকন ইম্পোর্ট করা হয়েছে
+import { HiOutlineLocationMarker } from "react-icons/hi";
 
 const Clubs = () => {
   const [search, setSearch] = useState("");
@@ -220,12 +220,13 @@ const Clubs = () => {
             </p>
           </div>
 
-          {/* 🛠 সার্চ, ফিল্টার ও সর্ট সেকশন */}
+          {/* 🛠 সার্চ, ফিল্টার ও সর্ট সেকশন (Value সিঙ্ক ফিক্সড) */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-4 mb-10 bg-base-100 p-5 rounded-2xl border border-base-300 shadow-sm">
             {/* Search Input */}
             <div className="md:col-span-4">
               <input
                 type="text"
+                value={search} // 👈 সার্চ ইনপুট সিঙ্ক
                 placeholder="Search by club name..."
                 className="input input-bordered w-full text-sm font-medium focus:border-[#FF6A1C]"
                 onChange={(e) => setSearch(e.target.value)}
@@ -235,6 +236,7 @@ const Clubs = () => {
             {/* Category Filter */}
             <div className="md:col-span-3">
               <select
+                value={category} //  ক্যাটাগরি ড্রপডাউন ফিক্সড
                 className="select select-bordered w-full text-sm font-medium cursor-pointer"
                 onChange={(e) => setCategory(e.target.value)}
               >
@@ -253,6 +255,7 @@ const Clubs = () => {
             {/* Location Filter */}
             <div className="md:col-span-3">
               <select
+                value={location} //  লোকেশন ড্রপডাউন ফিক্সড
                 className="select select-bordered w-full text-sm font-medium cursor-pointer"
                 onChange={(e) => setLocation(e.target.value)}
               >
@@ -269,6 +272,7 @@ const Clubs = () => {
             {/* Sort Input */}
             <div className="md:col-span-2">
               <select
+                value={sort} //  সর্ট ড্রপডাউন সিঙ্ক
                 className="select select-bordered w-full text-sm font-medium cursor-pointer"
                 onChange={(e) => setSort(e.target.value)}
               >
@@ -315,7 +319,7 @@ const Clubs = () => {
                         {club.clubName}
                       </h2>
 
-                      {/* 📍 🆕 লোকেশন টেক্সট (টাইটেলের ঠিক নিচে এবং ডেসক্রিপশনের ওপরে) */}
+                      {/* 📍 লোকেশন টেক্সট */}
                       <div className="flex items-center gap-1 text-xs text-gray-400 font-medium mt-1.5 mb-2">
                         <HiOutlineLocationMarker className="text-sm shrink-0 text-gray-500" />
                         <span className="line-clamp-1">

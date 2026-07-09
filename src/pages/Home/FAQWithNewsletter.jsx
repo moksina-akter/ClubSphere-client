@@ -1,8 +1,25 @@
-import React from "react";
+import React, { useState } from "react";
 
 const FAQWithNewsletter = () => {
+  const [email, setEmail] = useState("");
+  const [showToast, setShowToast] = useState(false);
+
+  const handleSubscribe = (e) => {
+    e.preventDefault();
+
+    console.log("Subscribed email:", email);
+
+    setShowToast(true);
+
+    setEmail("");
+
+    setTimeout(() => {
+      setShowToast(false);
+    }, 3000);
+  };
+
   return (
-    <section className="py-16 bg-base-100 border-t border-base-200">
+    <section className="py-16 bg-base-100 border-t border-base-200 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
           {/* Left Column: FAQ Accordion */}
@@ -64,7 +81,7 @@ const FAQWithNewsletter = () => {
           </div>
 
           {/* Right Column: Newsletter Subscription Box */}
-          <div className="bg-gradient-to-br from-orange-50 to-orange-100 p-8 rounded-3xl border border-orange-200 lg:mt-12">
+          <div className="p-8 rounded-3xl border border-orange-200 lg:mt-12 bg-gradient-to-br from-orange-50/50 to-transparent">
             <h3 className="text-xl font-bold text-neutral">
               Stay Updated with{" "}
               <span className="text-orange-500">ClubSphere</span>
@@ -72,18 +89,20 @@ const FAQWithNewsletter = () => {
             <p className="text-sm text-gray-600 mt-2 mb-6 leading-relaxed">
               Subscribe to our weekly newsletter to receive updates on upcoming
               events, popular clubs, and fresh announcements directly in your
-              inbox.
+              box.
             </p>
 
             {/* Subscription Form */}
             <form
-              onSubmit={(e) => e.preventDefault()}
+              onSubmit={handleSubscribe}
               className="flex flex-col sm:flex-row gap-3"
             >
               <input
                 type="email"
                 placeholder="Enter your email address"
                 className="input input-bordered w-full focus:outline-orange-500 text-sm bg-white"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
               />
               <button
@@ -100,6 +119,32 @@ const FAQWithNewsletter = () => {
           </div>
         </div>
       </div>
+
+      {/* DaisyUI Alert Toast Success Message */}
+      {showToast && (
+        <div className="toast toast-end z-50">
+          <div className="alert alert-success shadow-lg text-white bg-green-600 border-none">
+            <div className="flex items-center gap-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="stroke-current shrink-0 h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <span className="font-semibold text-sm">
+                Successfully subscribed to newsletter!
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 };
